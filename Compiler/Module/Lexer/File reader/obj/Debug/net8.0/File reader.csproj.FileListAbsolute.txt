@@ -1,0 +1,15 @@
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\bin\Debug\net8.0\File reader.exe
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\bin\Debug\net8.0\File reader.deps.json
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\bin\Debug\net8.0\File reader.runtimeconfig.json
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\bin\Debug\net8.0\File reader.dll
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\bin\Debug\net8.0\File reader.pdb
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\File reader.GeneratedMSBuildEditorConfig.editorconfig
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\File reader.AssemblyInfoInputs.cache
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\File reader.AssemblyInfo.cs
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\File reader.csproj.CoreCompileInputs.cache
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\File reader.sourcelink.json
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\File reader.dll
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\refint\File reader.dll
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\File reader.pdb
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\File reader.genruntimeconfig.cache
+C:\My things\Git\2nd Proyect Pixel Wall-E\Compiler\Module\Lexer\File reader\obj\Debug\net8.0\ref\File reader.dll

@@ -1,2 +1,12 @@
-Hello my name is 
-Alfonso la madre que te pario :)
+Hello
+Alfonso = gerardo 
+1 
+100 + 30 [ñlplñ]
+
+(llll) carro "Blue"
+GOTO
+**
+>=, <=, *,**,/, &&, == 
+|| & |  <- %
+
+

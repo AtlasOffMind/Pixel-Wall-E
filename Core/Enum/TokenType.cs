@@ -3,22 +3,22 @@ namespace Core.Enum;
 public enum TokenType
 {
     // Single-character tokens.
-    Plus, Minus,
-    Division, Multiplication,
-    Open_Paren, Clouse_Paren,
+    PLUS, MINUS,
+    DIVISION, MULTIPLICATION, POW,
+    OPEN_PAREN, CLOUSE_PAREN, MODULE,
 
-    // Literals.
-    Identifier, NUMBER, Label,
+    // LITERALS.
+    IDENTIFIER, NUMBER, LABEL,
 
     // One or two character tokens.
-    Bang, Bang_Equal,
-    Equal, Equal_Equal,
-    Greater, Greater_Equal,
-    Less, Less_Equal,
+    BANG, BANG_EQUAL,
+    EQUAL, EQUAL_EQUAL,
+    GREATER, GREATER_EQUAL,
+    LESS, LESS_EQUAL,
 
-    // Keywords.
-    AND, ELSE, FALSE, FUN, FOR,
-    GOTO, If, OR, True, 
-    EOF,
-
+    // KEYWORDS.
+    AND, FALSE,
+    GOTO, OR, TRUE,
+    EOF, ASSIGN,
+    BACKSLASH, COLOR,
 }

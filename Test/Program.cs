@@ -11,10 +11,10 @@ public class Program
 
         var text = TextReader.TextRead(fileName);
 
-        System.Console.WriteLine(string.Join("|| ", text.Split("\r\n")));
 
-        //        Tokenizer.Tokening(text.Split('\n'));
+        var arr = Scanner.Tokenizer(text.Split("\r\n"));
 
+        Console.WriteLine(string.Join("\n", arr));
 
     }
 }

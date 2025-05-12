@@ -85,15 +85,17 @@ namespace Lexer
             List<Token> tokens = [];
             int columnPos = 0;
             bool reader = false;
+   
 
 
-            for (int i = 0; i < line.Length - 1; i++)
+            for (int i = 0; i < line.Length; i++)
             {
                 Token? token;
                 for (int j = 0; j < line[i].Length; j++)
                 {
                     if (line[i][j] == '\"')
                         reader = !reader;
+
                     if (j + 1 < line[i].Length && Match(current + line[i][j + 1].ToString()))
                     {
                         current.Append(line[i][++j]);
@@ -107,11 +109,11 @@ namespace Lexer
                     }
                     if (SavingToken(current, i, columnPos, out token))
                         tokens.Add(token!);
-
                     columnPos = j + 1;
                 }
                 if (SavingToken(current, i, columnPos, out token))
                     tokens.Add(token!);
+
                 tokens.Add(new Token(i, columnPos, TokenType.BACKSLASH, "\n"));
             }
 
@@ -121,7 +123,7 @@ namespace Lexer
         public static bool IsSeparator(StringBuilder current, char sep)
         {
             var temp = current.ToString() + sep;
-            if (current.Length > 0 && Dictionary.ContainsKey(temp))
+            if ( Dictionary.ContainsKey(temp))
                 return false;
             return sep switch
             {
@@ -155,18 +157,18 @@ namespace Lexer
                 "==" => true,
                 "<=" => true,
                 ">=" => true,
+                "<-" => true,
                 _ => false,
             };
         }
-
         public static bool SavingToken(StringBuilder current, int i, int columnPos, out Token? token)
         {
             if (current.Length > 0)
             {
-                bool istrue; 
+                bool istrue;
                 token = null;
                 string name = current.ToString();
-                
+
                 if (istrue = Dictionary.TryGetValue(name.ToUpper(), out TokenType type))
                 {
                     token = new(i, columnPos, type, name);

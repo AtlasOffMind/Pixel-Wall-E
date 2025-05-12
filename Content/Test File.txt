@@ -1,12 +1,10 @@
-Hello
-Alfonso = gerardo 
-1 
-100 + 30 [ñlplñ]
+=  + 
 
-(llll) carro "Blue"
-GOTO
-**
->=, <=, *,**,/, &&, == 
+(1111) "Blue"
+
+** >= , <=, *,**,/, &&, == 
 || & |  <- %
 
 
+
+perro <- 12

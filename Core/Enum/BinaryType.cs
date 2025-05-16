@@ -1,6 +1,11 @@
-namespace Core.Language.AST;
+namespace Core.Enum;
 
 public enum BinaryType
 {
-    Sum
+    SUM,
+    MINUS,
+    DIVISION,
+    MULTIPLICATION,
+    POW,
+    MODULE,
 }

@@ -1,0 +1,9 @@
+using Core.Interface;
+using Core.Model;
+
+namespace Core.Language.AST.Expressions;
+
+public abstract class Expressions<T>(int row, int column) : ASTNode(row, column), IExpression<T>
+{
+    public abstract T Evaluate(Context context);
+}

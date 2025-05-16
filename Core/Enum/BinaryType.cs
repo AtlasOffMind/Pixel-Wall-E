@@ -2,10 +2,20 @@ namespace Core.Enum;
 
 public enum BinaryType
 {
-    SUM,
-    MINUS,
-    DIVISION,
-    MULTIPLICATION,
-    POW,
+    //Aritmetic
+    SUM, 
+    MINUS, 
+    DIVISION, 
+    MULTIPLICATION, 
+    POW, 
     MODULE,
+
+
+    //Booleans
+    EQUAL_EQUAL,
+    GREATER,
+    GREATER_EQUAL,
+    LESS,
+    LESS_EQUAL,
+    DIFERENT,
 }

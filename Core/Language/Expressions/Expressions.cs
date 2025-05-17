@@ -1,7 +1,7 @@
 using Core.Interface;
 using Core.Model;
 
-namespace Core.Language.AST.Expressions;
+namespace Core.Language.Expressions;
 
 public abstract class Expressions<T>(int row, int column) : ASTNode(row, column), IExpression<T>
 {

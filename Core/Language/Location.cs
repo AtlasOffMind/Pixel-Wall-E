@@ -1,4 +1,4 @@
-namespace Core.Language.AST;
+namespace Core.Language;
 
 public struct Location(int row, int column)
 {

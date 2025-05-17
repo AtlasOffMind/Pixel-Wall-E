@@ -1,6 +1,6 @@
 using Lexer.Model;
 
-namespace Core.Language.AST;
+namespace Core.Language;
 
 public abstract class ASTNode(int row, int column)
 {

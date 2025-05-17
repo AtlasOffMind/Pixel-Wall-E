@@ -1,7 +1,7 @@
 using Core.Interface;
 using Core.Model;
 
-namespace Core.Language.AST;
+namespace Core.Language;
 
 public class Label(int row, int column, string name) : ASTNode(row, column), ISemantic
 {

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexer", "Module\Lexer\Lexer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{3ADE086B-EDE2-4667-93EA-F56923E43DD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Module\Parser\Parser.csproj", "{D497033E-7DAA-4045-B12B-6261420DC8C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{3ADE086B-EDE2-4667-93EA-F56923E43DD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ADE086B-EDE2-4667-93EA-F56923E43DD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ADE086B-EDE2-4667-93EA-F56923E43DD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D497033E-7DAA-4045-B12B-6261420DC8C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D497033E-7DAA-4045-B12B-6261420DC8C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D497033E-7DAA-4045-B12B-6261420DC8C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D497033E-7DAA-4045-B12B-6261420DC8C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -38,5 +44,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8056DCBC-E58B-4973-8742-E3337F16E1C1} = {69A708E2-E2FC-4100-AE3A-76846AB59C20}
+		{D497033E-7DAA-4045-B12B-6261420DC8C3} = {69A708E2-E2FC-4100-AE3A-76846AB59C20}
 	EndGlobalSection
 EndGlobal

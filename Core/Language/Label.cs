@@ -3,7 +3,7 @@ using Core.Model;
 
 namespace Core.Language;
 
-public class Label(int row, int column, string name) : ASTNode(row, column), ISemantic
+public class Label(int row, int column, string name) : ASTNode(row, column), IInstruction
 {
     public string Name { get; } = name;
 
@@ -14,4 +14,6 @@ public class Label(int row, int column, string name) : ASTNode(row, column), ISe
         context.Labels[Name] = Location.Row;
         return true;
     }
+
+    public void Evaluate(Context context) { }
 }

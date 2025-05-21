@@ -3,6 +3,7 @@ using Core.Interface;
 using Core.Language;
 using Lexer.Model;
 using Core.Language.Expressions;
+using System.Diagnostics;
 
 namespace Parser;
 
@@ -20,75 +21,65 @@ public class Parser()
         List<IInstruction> instructions = [];
         while (index < tokens.Count)
         {
-            if (IsSeparator(tokens[index].type))
-            {   //Assing
-                if (tokens[index].type == TokenType.ASSIGN) instructions.Add(TryAssign(tokens[index], tokens, index));
-                //Label  
-                if (tokens[index].type == TokenType.IDENTIFIER) instructions.Add(TryLabel()); instructions.Add(TryMethod());
-                //GoTo
-                if (tokens[index].type == TokenType.GOTO) instructions.Add(TryGOTO());
-                //Method
-                if (MatchForType(tokens[index].type)) ;
-            }
-            index++;
+            if (MatchForType(tokens, TokenType.GOTO) && TryGOTO(tokens, out IInstruction value))
+                instructions.Add(value);
+            else if (MatchForType(tokens, TokenType.IDENTIFIER) && TryIDENTIFIER(tokens, out value))
+                instructions.Add(value);
+            if (MatchForType(tokens, TokenType.BACKSLASH))
+                continue;
+
+            //TODO implementar errores en cada Try y si no se encuentran ahi se lo envio desde el jumping
+            JumpingInstruct(tokens);
         }
 
         InstructionBlock block = new(instructions);
         return block;
     }
-
-    private bool IsSeparator(TokenType type)
+    private bool MatchForType(List<Token> tokens, TokenType type)
     {
-        return type switch
+        if (tokens[index].type != type)
+            return false;
+        index++;
+        return true;
+    }
+
+    private void JumpingInstruct(List<Token> tokens)
+    {
+        throw new NotImplementedException();
+    }
+
+    private bool TryIDENTIFIER(List<Token> tokens, out IInstruction value)
+    {
+        var token = tokens[index];
+        return tokens[index++].type switch
         {
-            TokenType.PLUS => true,
-            TokenType.POW => true,
-            TokenType.MINUS => true,
-            TokenType.DIVISION => true,
-            TokenType.MODULE => true,
-            TokenType.GREATER => true,
-            TokenType.GREATER_EQUAL => true,
-            TokenType.EQUAL => true,
-            TokenType.EQUAL_EQUAL => true,
-            TokenType.LESS => true,
-            TokenType.LESS_EQUAL => true,
-            TokenType.AND => true,
-            TokenType.OR => true,
-            _ => false,
+            TokenType.ASSIGN => TryAssign(tokens, out value),
+            TokenType.OPEN_PAREN => TryMethod(tokens, out value),
+            TokenType.BACKSLASH => TryLabel(token, out value),
+            _ => throw new Exception(""),
         };
     }
-    private IInstruction TryMethod()
+
+    private bool TryMethod(List<Token> tokens, out IInstruction value)
     {
         throw new NotImplementedException();
     }
 
-    private IInstruction TryGOTO()
+    private bool TryGOTO(List<Token> tokens, out IInstruction value)
     {
         throw new NotImplementedException();
     }
 
-    private IInstruction TryLabel()
+    private bool TryLabel(Token token, out IInstruction value)
     {
-        throw new NotImplementedException();
+        value = new Label(token.row, token.column, token.name);
+        return true;
     }
 
-    private bool MatchForType(TokenType type)
-    {
-        //para operaciones aritmeticas
-        throw new NotImplementedException();
-    }
 
-    private IInstruction TryAssign(Token token, List<Token> tokens, int index)
+    private bool TryAssign(List<Token> tokens, out IInstruction value)
     {
         //para variables
-        int i = index;
-        string previous = tokens[--index].name;
-        string current = tokens[i].name;
-        string next = tokens[++i].name;
-        Literal<int> value = new(int.Parse(next));
-
-
-        Token temp = new(tokens[--index].row, tokens[--index].row, TokenType.ASSIGN, previous + current + next);
-        return new Assign<int>(temp.row, temp.column, tokens[--index].name, value);
+        throw new NotImplementedException();
     }
 }

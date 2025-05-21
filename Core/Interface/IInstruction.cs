@@ -2,7 +2,7 @@ using Core.Model;
 
 namespace Core.Interface;
 
-public interface IInstruction
+public interface IInstruction : ISemantic
 {
     /// <summary>
     /// Hace un recorrido de evaluación en el AST para ejecutar el código

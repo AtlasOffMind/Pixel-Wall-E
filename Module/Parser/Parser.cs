@@ -21,10 +21,10 @@ public class Parser()
         List<IInstruction> instructions = [];
         while (index < tokens.Count)
         {
-            if (MatchForType(tokens, TokenType.GOTO) && TryGOTO(tokens, out IInstruction value))
+            if (MatchForType(tokens, TokenType.GOTO) && TryGOTO(tokens, out IInstruction? value))
                 instructions.Add(value);
             else if (MatchForType(tokens, TokenType.IDENTIFIER) && TryIDENTIFIER(tokens, out value))
-                instructions.Add(value);
+                instructions.Add(value!);
             if (MatchForType(tokens, TokenType.BACKSLASH))
                 continue;
 
@@ -48,16 +48,52 @@ public class Parser()
         throw new NotImplementedException();
     }
 
-    private bool TryIDENTIFIER(List<Token> tokens, out IInstruction value)
+    private bool TryIDENTIFIER(List<Token> tokens, out IInstruction? value)
     {
         var token = tokens[index];
         return tokens[index++].type switch
         {
-            TokenType.ASSIGN => TryAssign(tokens, out value),
+            TokenType.ASSIGN => TryAssign(tokens, token, out value),
             TokenType.OPEN_PAREN => TryMethod(tokens, out value),
             TokenType.BACKSLASH => TryLabel(token, out value),
             _ => throw new Exception(""),
         };
+    }
+    private bool TryAssign(List<Token> tokens, Token token, out IInstruction? value)
+    {
+        //TODO hacer las expresiones restantes empezando por las booleanas, numericas (sin hacer las resta, la division, la potenciacion)
+        if (NumericExpression(tokens, out IExpression<int> num))
+        {
+            value = new Assign<int>(token.row, token.column, token.name, num);
+            return true;
+        }
+        if (BooleanExpression(tokens, out IExpression<bool> boolean))
+        {
+            value = new Assign<bool>(token.row, token.column, token.name, boolean);
+            return true;
+        }
+        if (ColorExpression(tokens, out IExpression<string> str))
+        {
+            value = new Assign<string>(token.row, token.column, token.name, str);
+            return true;
+        }
+        value = null;
+        return false;
+    }
+
+    private bool ColorExpression(List<Token> tokens, out IExpression<string> str)
+    {
+        throw new NotImplementedException();
+    }
+
+    private bool NumericExpression(List<Token> tokens, out IExpression<int> num)
+    {
+        throw new NotImplementedException();
+    }
+
+    private bool BooleanExpression(List<Token> tokens, out IExpression<bool> expression)
+    {
+        throw new NotImplementedException();
     }
 
     private bool TryMethod(List<Token> tokens, out IInstruction value)
@@ -77,9 +113,4 @@ public class Parser()
     }
 
 
-    private bool TryAssign(List<Token> tokens, out IInstruction value)
-    {
-        //para variables
-        throw new NotImplementedException();
-    }
 }

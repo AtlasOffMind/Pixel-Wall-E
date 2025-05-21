@@ -3,7 +3,7 @@ using Core.Model;
 
 namespace Core.Language.Expressions;
 
-class Literal<T>(T value) : IExpression<T>
+public class Literal<T>(T value) : IExpression<T>
 {
     public T Value { get; set; } = value;
 

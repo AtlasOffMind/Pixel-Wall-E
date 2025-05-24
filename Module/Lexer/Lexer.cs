@@ -87,7 +87,6 @@ namespace Lexer
             bool reader = false;
    
 
-
             for (int i = 0; i < line.Length; i++)
             {
                 Token? token;

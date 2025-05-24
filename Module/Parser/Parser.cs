@@ -4,6 +4,7 @@ using Core.Language;
 using Lexer.Model;
 using Core.Language.Expressions;
 using System.Diagnostics;
+using Core.Model;
 
 namespace Parser;
 
@@ -29,6 +30,7 @@ public class Parser()
                 continue;
 
             //TODO implementar errores en cada Try y si no se encuentran ahi se lo envio desde el jumping
+
             JumpingInstruct(tokens);
         }
 
@@ -67,9 +69,9 @@ public class Parser()
             value = new Assign<int>(token.row, token.column, token.name, num);
             return true;
         }
-        if (BooleanExpression(tokens, out IExpression<bool> boolean))
+        if (BooleanExpression(tokens, out IExpression<bool>? boolean))
         {
-            value = new Assign<bool>(token.row, token.column, token.name, boolean);
+            value = new Assign<bool>(token.row, token.column, token.name, boolean!);
             return true;
         }
         if (ColorExpression(tokens, out IExpression<string> str))
@@ -80,18 +82,23 @@ public class Parser()
         value = null;
         return false;
     }
-
+    private bool BooleanExpression(List<Token> tokens, out IExpression<bool>? expression)
+    {
+        var temp = tokens[index];
+        if (temp.name == "true")
+        {
+            expression = new Literal<bool>(true);
+            return true;
+        }
+        expression = null;
+        return false;
+    }
     private bool ColorExpression(List<Token> tokens, out IExpression<string> str)
     {
         throw new NotImplementedException();
     }
 
     private bool NumericExpression(List<Token> tokens, out IExpression<int> num)
-    {
-        throw new NotImplementedException();
-    }
-
-    private bool BooleanExpression(List<Token> tokens, out IExpression<bool> expression)
     {
         throw new NotImplementedException();
     }

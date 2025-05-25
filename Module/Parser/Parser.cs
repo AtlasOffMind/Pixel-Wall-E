@@ -5,6 +5,7 @@ using Lexer.Model;
 using Core.Language.Expressions;
 using System.Diagnostics;
 using Core.Model;
+using Core.Extension;
 
 namespace Parser;
 
@@ -83,6 +84,8 @@ public class Parser()
         return false;
     }
 
+
+    #region Boollean Expresions
     private bool BooleanExpression(List<Token> tokens, out IExpression<bool>? expression)
     {
         return OrExpression(tokens, out expression);
@@ -108,9 +111,8 @@ public class Parser()
 
         expression = null;
         return false;
-        
-    }
 
+    }
 
     private bool AndExpression(List<Token> tokens, out IExpression<bool>? expression)
     {
@@ -134,6 +136,8 @@ public class Parser()
         return false;
     }
 
+    #endregion
+
     private bool LiteralExpression<T>(List<Token> tokens, TokenType type, out IExpression<T>? expression)
         where T : IParsable<T>
     {
@@ -145,13 +149,13 @@ public class Parser()
         }
 
         expression = null;
-        var a = true && true && true;
         return false;
     }
 
-    private bool ColorExpression(List<Token> tokens, out IExpression<string> str)
+    private bool ColorExpression(List<Token> tokens, out IExpression<string>? str)
     {
-        throw new NotImplementedException();
+        
+        return LiteralExpression(tokens, TokenType.COLOR, out str);
     }
 
     private bool TryLabel(Token token, out IInstruction value)
@@ -164,10 +168,95 @@ public class Parser()
     // / * %
     // **
     // numero
-    private bool NumericExpression(List<Token> tokens, out IExpression<int> num)
+    private bool NumericExpression(List<Token> tokens, out IExpression<int>? num)
     {
-        throw new NotImplementedException();
+        return SumExpression(tokens, out num);
     }
+    private bool SumExpression(List<Token> tokens, out IExpression<int>? expression)
+    {
+        List<TokenType> tokensTypes = [TokenType.PLUS, TokenType.MINUS];
+
+        if (MultiExpression(tokens, out IExpression<int>? left))
+        {
+            var token = tokens[index];
+            if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
+            {
+                expression = left;
+                return true;
+            }
+
+            if (SumExpression(tokens, out IExpression<int>? right))
+            {
+                expression = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
+                return true;
+            }
+        }
+
+        expression = null;
+        return false;
+    }
+
+    private bool MultiExpression(List<Token> tokens, out IExpression<int>? expression)
+    {
+        List<TokenType> tokensTypes = [TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULE];
+
+        if (PowExpression(tokens, out IExpression<int>? left))
+        {
+            var token = tokens[index];
+            if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
+            {
+                expression = left;
+                return true;
+            }
+
+            if (MultiExpression(tokens, out IExpression<int>? right))
+            {
+                expression = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
+                return true;
+            }
+        }
+
+        expression = null;
+        return false;
+    }
+
+    private bool FirstMatch(List<Token> tokens, List<TokenType> tokensTypes, out TokenType? type)
+    {
+        //TODO ponerle el Hashtable a este for 
+        foreach (var i in tokensTypes)
+        {
+            if (MatchForType(tokens, i))
+            {
+                type = i;
+                return true;
+            }
+        }
+        type = null;
+        return false;
+    }
+
+    private bool PowExpression(List<Token> tokens, out IExpression<int>? expression)
+    {
+        if (LiteralExpression(tokens, TokenType.NUMBER, out IExpression<int>? left))
+        {
+            var token = tokens[index];
+            if (!MatchForType(tokens, TokenType.POW))
+            {
+                expression = left;
+                return true;
+            }
+
+            if (PowExpression(tokens, out IExpression<int>? right))
+            {
+                expression = new BinaryNumExpr(token.row, token.column, left!, right!, BinaryType.POW);
+                return true;
+            }
+        }
+
+        expression = null;
+        return false;
+    }
+
 
     private bool TryMethod(List<Token> tokens, out IInstruction value)
     {

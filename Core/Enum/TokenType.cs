@@ -8,18 +8,17 @@ public enum TokenType
     OPEN_PAREN, CLOUSE_PAREN, MODULE,
 
     // LITERALS.
-    IDENTIFIER, NUMBER, LABEL,
+    IDENTIFIER, NUMBER,
 
     // One or two character tokens.
-    BANG, BANG_EQUAL,
     EQUAL, EQUAL_EQUAL,
     GREATER, GREATER_EQUAL,
     LESS, LESS_EQUAL,
     DIFERENT,
 
     // KEYWORDS.
-    AND, FALSE,
-    GOTO, OR, TRUE,
+    AND, 
+    GOTO, OR, 
     EOF, ASSIGN,
     BACKSLASH, COLOR,
     BOOLEAN,

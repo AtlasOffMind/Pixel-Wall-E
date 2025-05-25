@@ -1,8 +1,10 @@
 using Core.Enum;
+using Core.Interface;
+using Core.Model;
 
 namespace Core.Extension;
 
-public static class Extensions 
+public static class Extensions
 {
     public static BinaryType ToBinary(this TokenType type) => type switch
     {
@@ -22,4 +24,17 @@ public static class Extensions
         TokenType.OR => BinaryType.OR,
         _ => throw new NotImplementedException()
     };
+
+    public static IExpression<object> ToObjectExpression<T>(this IExpression<T> expression)
+        => new ObjectExpression<T>(expression);
+}
+
+public class ObjectExpression<T>(IExpression<T> expression) : IExpression<object>
+{
+    public IExpression<T> Expression { get; } = expression;
+
+    public object Evaluate(Context context)
+    {
+        return Expression.Evaluate(context)!;
+    }
 }

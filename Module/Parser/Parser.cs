@@ -3,8 +3,6 @@ using Core.Interface;
 using Core.Language;
 using Lexer.Model;
 using Core.Language.Expressions;
-using System.Diagnostics;
-using Core.Model;
 using Core.Extension;
 
 namespace Parser;
@@ -24,7 +22,7 @@ public class Parser()
         while (index < tokens.Count)
         {
             if (MatchForType(tokens, TokenType.GOTO) && TryGOTO(tokens, out IInstruction? value))
-                instructions.Add(value);
+                instructions.Add(value!);
             else if (MatchForType(tokens, TokenType.IDENTIFIER) && TryIDENTIFIER(tokens, out value))
                 instructions.Add(value!);
             if (MatchForType(tokens, TokenType.BACKSLASH))
@@ -38,52 +36,101 @@ public class Parser()
         InstructionBlock block = new(instructions);
         return block;
     }
-    private bool MatchForType(List<Token> tokens, TokenType type)
-    {
-        if (tokens[index].type != type)
-            return false;
-        index++;
-        return true;
-    }
 
+    #region Line
     private void JumpingInstruct(List<Token> tokens)
     {
-        throw new NotImplementedException();
+        while (tokens[index++].type != TokenType.BACKSLASH) ;
     }
 
     private bool TryIDENTIFIER(List<Token> tokens, out IInstruction? value)
     {
-        var token = tokens[index];
+        var token = tokens[index - 1];
         return tokens[index++].type switch
         {
             TokenType.ASSIGN => TryAssign(tokens, token, out value),
-            TokenType.OPEN_PAREN => TryMethod(tokens, out value),
+            TokenType.OPEN_PAREN => TryMethod(tokens, token, out value),
             TokenType.BACKSLASH => TryLabel(token, out value),
             _ => throw new Exception(""),
         };
     }
     private bool TryAssign(List<Token> tokens, Token token, out IInstruction? value)
     {
-        //TODO hacer las expresiones restantes empezando por las booleanas, numericas (sin hacer las resta, la division, la potenciacion)
-        if (NumericExpression(tokens, out IExpression<int> num))
+        if (TryExpression(tokens, out IExpression<object>? expression))
         {
-            value = new Assign<int>(token.row, token.column, token.name, num);
-            return true;
-        }
-        if (BooleanExpression(tokens, out IExpression<bool>? boolean))
-        {
-            value = new Assign<bool>(token.row, token.column, token.name, boolean!);
-            return true;
-        }
-        if (ColorExpression(tokens, out IExpression<string> str))
-        {
-            value = new Assign<string>(token.row, token.column, token.name, str);
+            value = new Assign(token.row, token.column, token.name, expression!);
             return true;
         }
         value = null;
         return false;
     }
 
+    private bool TryExpression(List<Token> tokens, out IExpression<object>? expression)
+    {
+        if (NumericExpression(tokens, out IExpression<int>? num))
+        {
+            expression = num!.ToObjectExpression();
+            return true;
+        }
+        if (BooleanExpression(tokens, out IExpression<bool>? boolean))
+        {
+            expression = boolean!.ToObjectExpression();
+            return true;
+        }
+        if (ColorExpression(tokens, out IExpression<string>? str))
+        {
+            expression = str!.ToObjectExpression();
+            return true;
+        }
+
+        expression = null;
+        return false;
+    }
+
+    private bool TryLabel(Token token, out IInstruction value)
+    {
+        value = new Label(token.row, token.column, token.name);
+        return true;
+    }
+
+    private bool TryMethod(List<Token> tokens, Token token, out IInstruction value)
+    {
+        List<IExpression<object>> list = [];
+
+        if (!MatchForType(tokens, TokenType.CLOUSE_PAREN) && TryExpression(tokens, out IExpression<object>? param))
+            list.Add(param!);
+
+        while (!MatchForType(tokens, TokenType.CLOUSE_PAREN))
+        {
+            if (MatchForType(tokens, TokenType.COMMA) && TryExpression(tokens, out param))
+                list.Add(param!);
+        }
+
+        value = new Method(token.row, token.column, token.name, list);
+        return true;
+    }
+
+    private bool TryGOTO(List<Token> tokens, out IInstruction? value)
+    {
+        if (MatchForType(tokens, TokenType.OPEN_BRACKED)
+            && MatchForType(tokens, TokenType.IDENTIFIER)
+            && MatchForType(tokens, TokenType.CLOUSE_BRACKED))
+        {
+            var token = tokens[index - 2];
+            if (MatchForType(tokens, TokenType.OPEN_PAREN)
+                && BooleanExpression(tokens, out IExpression<bool>? cond)
+                && MatchForType(tokens, TokenType.CLOUSE_PAREN))
+            {
+                value = new Goto(token.row, token.column, token.name, cond!);
+                return true;
+            }
+        }
+
+        // TODO Guardar exceptions
+        value = null;
+        return false;
+    }
+    #endregion
 
     #region Boollean Expresions
     private bool BooleanExpression(List<Token> tokens, out IExpression<bool>? expression)
@@ -138,58 +185,48 @@ public class Parser()
 
     #endregion
 
-    private bool LiteralExpression<T>(List<Token> tokens, TokenType type, out IExpression<T>? expression)
-        where T : IParsable<T>
+    #region Numeric Expression
+    private bool NumericExpression(List<Token> tokens, out IExpression<int>? num)
     {
-        var token = tokens[index];
-        if (MatchForType(tokens, type) && T.TryParse(token.name, null, out var value))
+        return SumExpression(tokens, out num);
+    }
+
+    private bool SumExpression(List<Token> tokens, out IExpression<int>? expression)
+    {
+        if (MultiExpression(tokens, out IExpression<int>? left))
         {
-            expression = new Literal<T>(value);
-            return true;
+            if (SumExpression(tokens, left!, out expression))
+            {
+                return true;
+            }
         }
 
         expression = null;
         return false;
     }
-
-    private bool ColorExpression(List<Token> tokens, out IExpression<string>? str)
-    {
-        
-        return LiteralExpression(tokens, TokenType.COLOR, out str);
-    }
-
-    private bool TryLabel(Token token, out IInstruction value)
-    {
-        value = new Label(token.row, token.column, token.name);
-        return true;
-    }
-
-    // + - 
-    // / * %
-    // **
-    // numero
-    private bool NumericExpression(List<Token> tokens, out IExpression<int>? num)
-    {
-        return SumExpression(tokens, out num);
-    }
-    private bool SumExpression(List<Token> tokens, out IExpression<int>? expression)
+    private bool SumExpression(List<Token> tokens, IExpression<int> left, out IExpression<int>? expression)
     {
         List<TokenType> tokensTypes = [TokenType.PLUS, TokenType.MINUS];
-
-        if (MultiExpression(tokens, out IExpression<int>? left))
+        var token = tokens[index];
+        if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
         {
-            var token = tokens[index];
-            if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
-            {
-                expression = left;
-                return true;
-            }
+            expression = left;
+            return true;
+        }
 
-            if (SumExpression(tokens, out IExpression<int>? right))
+        if (type == TokenType.MINUS && MultiExpression(tokens, out IExpression<int>? right))
+        {
+            left = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
+            if (SumExpression(tokens, left, out expression))
             {
-                expression = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
                 return true;
             }
+        }
+
+        if (SumExpression(tokens, out right))
+        {
+            expression = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
+            return true;
         }
 
         expression = null;
@@ -198,22 +235,40 @@ public class Parser()
 
     private bool MultiExpression(List<Token> tokens, out IExpression<int>? expression)
     {
-        List<TokenType> tokensTypes = [TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULE];
-
         if (PowExpression(tokens, out IExpression<int>? left))
         {
-            var token = tokens[index];
-            if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
+            if (MultiExpression(tokens, left!, out expression))
             {
-                expression = left;
                 return true;
             }
+        }
 
-            if (MultiExpression(tokens, out IExpression<int>? right))
+        expression = null;
+        return false;
+    }
+    private bool MultiExpression(List<Token> tokens, IExpression<int> left, out IExpression<int>? expression)
+    {
+        List<TokenType> tokensTypes = [TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULE];
+        var token = tokens[index];
+        if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
+        {
+            expression = left;
+            return true;
+        }
+
+        if (type == TokenType.DIVISION && PowExpression(tokens, out IExpression<int>? right))
+        {
+            left = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
+            if (MultiExpression(tokens, left, out expression))
             {
-                expression = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
                 return true;
             }
+        }
+
+        if (MultiExpression(tokens, out right))
+        {
+            expression = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
+            return true;
         }
 
         expression = null;
@@ -256,18 +311,34 @@ public class Parser()
         expression = null;
         return false;
     }
+    #endregion
 
-
-    private bool TryMethod(List<Token> tokens, out IInstruction value)
+    private bool ColorExpression(List<Token> tokens, out IExpression<string>? str)
     {
-        throw new NotImplementedException();
+
+        return LiteralExpression(tokens, TokenType.COLOR, out str);
     }
 
-    private bool TryGOTO(List<Token> tokens, out IInstruction value)
+    private bool MatchForType(List<Token> tokens, TokenType type)
     {
-        throw new NotImplementedException();
+        if (tokens[index].type != type)
+            return false;
+        index++;
+        return true;
     }
 
+    private bool LiteralExpression<T>(List<Token> tokens, TokenType type, out IExpression<T>? expression)
+        where T : IParsable<T>
+    {
+        var token = tokens[index];
+        if (MatchForType(tokens, type) && T.TryParse(token.name, null, out var value))
+        {
+            expression = new Literal<T>(value);
+            return true;
+        }
 
+        expression = null;
+        return false;
+    }
 
 }

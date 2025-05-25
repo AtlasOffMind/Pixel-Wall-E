@@ -1,6 +1,6 @@
 using Core.Interface;
 using Core.Model;
-namespace Parser;
+namespace Core.Language;
 
 public class InstructionBlock(List<IInstruction> instructions) : IInstruction
 {
@@ -18,9 +18,11 @@ public class InstructionBlock(List<IInstruction> instructions) : IInstruction
 
     public void Evaluate(Context context)
     {
-        foreach (var i in Instructions)
+        for (int i = 0; i < Instructions.Count; i++)
         {
-            i.Evaluate(context);
+            Instructions[i].Evaluate(context);
+            if (context.JumpCond)
+                i = context.Labels[context.JumpTo!];
         }
     }
 }

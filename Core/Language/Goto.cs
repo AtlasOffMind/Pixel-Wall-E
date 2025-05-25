@@ -1,0 +1,22 @@
+using Core.Language.Expressions;
+using Core.Interface;
+using Core.Model;
+
+namespace Core.Language;
+
+public class Goto(int row, int column, string labelName, IExpression<bool> cond) : ASTNode(row, column), IInstruction
+{
+    public string LabelName { get; } = labelName;
+    public IExpression<bool> Cond { get; } = cond;
+
+    public bool CheckSemantic(Context context)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Evaluate(Context context)
+    {
+        context.JumpCond = Cond.Evaluate(context);
+        context.JumpTo = LabelName;
+    }
+}

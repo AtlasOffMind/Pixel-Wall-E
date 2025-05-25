@@ -22,4 +22,7 @@ public enum TokenType
     EOF, ASSIGN,
     BACKSLASH, COLOR,
     BOOLEAN,
+    COMMA,
+    CLOUSE_BRACKED,
+    OPEN_BRACKED,
 }

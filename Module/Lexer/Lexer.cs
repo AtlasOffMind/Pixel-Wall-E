@@ -72,9 +72,9 @@ namespace Lexer
 
                 { "(", TokenType.OPEN_PAREN},
                 { ")", TokenType.CLOUSE_PAREN},
-                { "[", TokenType.OPEN_PAREN},
-                { "]", TokenType.CLOUSE_PAREN},
-
+                { "[", TokenType.OPEN_BRACKED},
+                { "]", TokenType.CLOUSE_BRACKED},
+                { ",", TokenType.COMMA},
 
             };
 

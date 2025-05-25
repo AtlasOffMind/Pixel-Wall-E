@@ -82,22 +82,88 @@ public class Parser()
         value = null;
         return false;
     }
+
     private bool BooleanExpression(List<Token> tokens, out IExpression<bool>? expression)
     {
-        var temp = tokens[index];
-        if (temp.name == "true")
+        return OrExpression(tokens, out expression);
+    }
+
+    private bool OrExpression(List<Token> tokens, out IExpression<bool>? expression)
+    {
+        if (AndExpression(tokens, out IExpression<bool>? left))
         {
-            expression = new Literal<bool>(true);
-            return true;
+            var token = tokens[index];
+            if (!MatchForType(tokens, TokenType.OR))
+            {
+                expression = left;
+                return true;
+            }
+
+            if (OrExpression(tokens, out IExpression<bool>? right))
+            {
+                expression = new BinaryBoolean(token.row, token.column, left!, right!, BinaryType.OR);
+                return true;
+            }
         }
+
+        expression = null;
+        return false;
+        
+    }
+
+
+    private bool AndExpression(List<Token> tokens, out IExpression<bool>? expression)
+    {
+        if (LiteralExpression(tokens, TokenType.BOOLEAN, out IExpression<bool>? left))
+        {
+            var token = tokens[index];
+            if (!MatchForType(tokens, TokenType.AND))
+            {
+                expression = left;
+                return true;
+            }
+
+            if (AndExpression(tokens, out IExpression<bool>? right))
+            {
+                expression = new BinaryBoolean(token.row, token.column, left!, right!, BinaryType.AND);
+                return true;
+            }
+        }
+
         expression = null;
         return false;
     }
+
+    private bool LiteralExpression<T>(List<Token> tokens, TokenType type, out IExpression<T>? expression)
+        where T : IParsable<T>
+    {
+        var token = tokens[index];
+        if (MatchForType(tokens, type) && T.TryParse(token.name, null, out var value))
+        {
+            expression = new Literal<T>(value);
+            return true;
+        }
+
+        expression = null;
+        var a = true && true && true;
+        return false;
+    }
+
     private bool ColorExpression(List<Token> tokens, out IExpression<string> str)
     {
         throw new NotImplementedException();
     }
 
+    private bool TryLabel(Token token, out IInstruction value)
+    {
+        value = new Label(token.row, token.column, token.name);
+        return true;
+    }
+
+    // + - 
+    // / * %
+    // **
+    // numero
     private bool NumericExpression(List<Token> tokens, out IExpression<int> num)
     {
         throw new NotImplementedException();
@@ -113,11 +179,6 @@ public class Parser()
         throw new NotImplementedException();
     }
 
-    private bool TryLabel(Token token, out IInstruction value)
-    {
-        value = new Label(token.row, token.column, token.name);
-        return true;
-    }
 
 
 }

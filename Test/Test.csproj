@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Module\Lexer\Lexer.csproj" />
+    <ProjectReference Include="..\Module\Parser\Parser.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -55,8 +55,8 @@ namespace Lexer
                 { "||",TokenType.OR},
                 { "&",TokenType.AND},
                 { "|",TokenType.OR}, // mas presedencia que el AND
-                { "false",TokenType.FALSE},
-                { "true",TokenType.TRUE},
+                { "false",TokenType.BOOLEAN},
+                { "true",TokenType.BOOLEAN},
 
                 //Keywords
                 {"GOTO",TokenType.GOTO},
@@ -85,7 +85,7 @@ namespace Lexer
             List<Token> tokens = [];
             int columnPos = 0;
             bool reader = false;
-   
+
 
             for (int i = 0; i < line.Length; i++)
             {
@@ -122,7 +122,7 @@ namespace Lexer
         public static bool IsSeparator(StringBuilder current, char sep)
         {
             var temp = current.ToString() + sep;
-            if ( Dictionary.ContainsKey(temp))
+            if (Dictionary.ContainsKey(temp))
                 return false;
             return sep switch
             {

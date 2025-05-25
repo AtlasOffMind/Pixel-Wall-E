@@ -18,4 +18,6 @@ public enum BinaryType
     LESS,
     LESS_EQUAL,
     DIFERENT,
+    AND,
+    OR,
 }

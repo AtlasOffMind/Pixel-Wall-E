@@ -24,6 +24,20 @@
         "runtime": {
           "bin/placeholder/Lexer.dll": {}
         }
+      },
+      "Parser/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Core": "1.0.0",
+          "Lexer": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Parser.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Parser.dll": {}
+        }
       }
     }
   },
@@ -37,11 +51,17 @@
       "type": "project",
       "path": "../Module/Lexer/Lexer.csproj",
       "msbuildProject": "../Module/Lexer/Lexer.csproj"
+    },
+    "Parser/1.0.0": {
+      "type": "project",
+      "path": "../Module/Parser/Parser.csproj",
+      "msbuildProject": "../Module/Parser/Parser.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "Lexer >= 1.0.0"
+      "Lexer >= 1.0.0",
+      "Parser >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -71,6 +91,9 @@
           "projectReferences": {
             "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj": {
               "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj"
+            },
+            "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Parser\\Parser.csproj": {
+              "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Parser\\Parser.csproj"
             }
           }
         }

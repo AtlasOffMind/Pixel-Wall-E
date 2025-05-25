@@ -9,6 +9,6 @@ public class Literal<T>(T value) : IExpression<T>
 
     public T Evaluate(Context context)
     {
-        throw new NotImplementedException();
+        return Value;
     }
 }

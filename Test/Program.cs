@@ -1,5 +1,6 @@
 ﻿using TextReader = Lexer.TextReader;
 using Lexer;
+using Core.Model;
 
 namespace Test;
 
@@ -8,6 +9,8 @@ public class Program
     public static void Main(string[] args)
     {
         var fileName = "Test File.txt";
+        var parser = new Parser.Parser();
+        var context = new Context();
 
         var text = TextReader.TextRead(fileName);
 
@@ -16,5 +19,9 @@ public class Program
 
         Console.WriteLine(string.Join("\n", arr));
 
+        var ast = parser.Parse(arr);
+
+        ast.CheckSemantic(context);
+        ast.Evaluate(context);
     }
 }

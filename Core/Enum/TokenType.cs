@@ -22,4 +22,5 @@ public enum TokenType
     GOTO, OR, TRUE,
     EOF, ASSIGN,
     BACKSLASH, COLOR,
+    BOOLEAN,
 }

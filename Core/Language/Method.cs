@@ -4,7 +4,7 @@ using Core.Model;
 
 namespace Core.Language;
 
-public class Method<T>(int row, int column, string name, List<IExpression<object>> @params) : Expressions<T>(row, column), IExpression<T>
+public class Method<T>(int row, int column, string name, List<IExpression<object>> @params) : Expression<T>(row, column), IExpression<T>
 {
     public string Name { get; } = name;
     public IExpression<object>[] Params { get; } = [.. @params];

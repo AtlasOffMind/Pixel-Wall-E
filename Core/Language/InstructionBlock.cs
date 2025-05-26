@@ -22,7 +22,10 @@ public class InstructionBlock(List<IInstruction> instructions) : IInstruction
         {
             Instructions[i].Evaluate(context);
             if (context.JumpCond)
-                i = context.Labels[context.JumpTo!];
+            {
+                i = context.Labels[context.JumpTo!] - 1;
+                context.JumpCond = false;
+            }
         }
     }
 }

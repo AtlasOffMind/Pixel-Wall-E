@@ -21,7 +21,11 @@ public class Program
 
         var ast = parser.Parse(arr);
 
-        ast.CheckSemantic(context);
+        // TODO hacer otro recorrido para buscar los labels
+        // ast.SearchLabels(context); (hacer interfaz ISerachLabel para hacer el recorrido de la busqueda de labels)
+        //Search label sea solo para las instrucciones 
+        // ISL busca en el bloque de instrucciones todas las instrucciones tipo label y evaluandolas antes que todas las demas
+        // ast.CheckSemantic(context);
         ast.Evaluate(context);
     }
 }

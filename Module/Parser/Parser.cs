@@ -25,12 +25,9 @@ public class Parser()
                 instructions.Add(value!);
             else if (MatchForType(tokens, TokenType.IDENTIFIER) && TryIDENTIFIER(tokens, out value))
                 instructions.Add(value!);
-            if (MatchForType(tokens, TokenType.BACKSLASH))
-                continue;
-
+            else
+                JumpingInstruct(tokens);
             //TODO implementar errores en cada Try y si no se encuentran ahi se lo envio desde el jumping
-
-            JumpingInstruct(tokens);
         }
 
         InstructionBlock block = new(instructions);
@@ -56,7 +53,7 @@ public class Parser()
     }
     private bool TryAssign(List<Token> tokens, Token token, out IInstruction? value)
     {
-        if (TryExpression(tokens, out IExpression<object>? expression))
+        if (TryExpression(tokens, out IExpression<object>? expression, TokenType.BACKSLASH))
         {
             value = new Assign(token.row, token.column, token.name, expression!);
             return true;
@@ -65,25 +62,29 @@ public class Parser()
         return false;
     }
 
-    private bool TryExpression(List<Token> tokens, out IExpression<object>? expression)
+    private bool TryExpression(List<Token> tokens, out IExpression<object>? expression, TokenType? endType = null)
     {
-        if (NumericExpression(tokens, out IExpression<int>? num))
-        {
-            expression = num!.ToObjectExpression();
-            return true;
-        }
-        if (BooleanExpression(tokens, out IExpression<bool>? boolean))
+        var startIndex = index;
+        if (BooleanExpression(tokens, out IExpression<bool>? boolean) && (endType == null || MatchForType(tokens, endType.Value)))
         {
             expression = boolean!.ToObjectExpression();
             return true;
         }
-        if (ColorExpression(tokens, out IExpression<string>? str))
+        index = startIndex;
+        if (NumericExpression(tokens, out IExpression<int>? num) && (endType == null || MatchForType(tokens, endType.Value)))
+        {
+            expression = num!.ToObjectExpression();
+            return true;
+        }
+        index = startIndex;
+        if (ColorExpression(tokens, out IExpression<string>? str) && (endType == null || MatchForType(tokens, endType.Value)))
         {
             expression = str!.ToObjectExpression();
             return true;
         }
 
         expression = null;
+        index = startIndex;
         return false;
     }
 
@@ -93,7 +94,7 @@ public class Parser()
         return true;
     }
 
-    private bool TryMethod(List<Token> tokens, Token token, out IInstruction value)
+    private bool TryMethod(List<Token> tokens, Token token, out IInstruction? value)
     {
         List<IExpression<object>> list = [];
 
@@ -106,6 +107,11 @@ public class Parser()
                 list.Add(param!);
         }
 
+        if (!MatchForType(tokens, TokenType.BACKSLASH))
+        {
+            value = null;
+            return false;
+        }
         value = new Method(token.row, token.column, token.name, list);
         return true;
     }
@@ -119,7 +125,8 @@ public class Parser()
             var token = tokens[index - 2];
             if (MatchForType(tokens, TokenType.OPEN_PAREN)
                 && BooleanExpression(tokens, out IExpression<bool>? cond)
-                && MatchForType(tokens, TokenType.CLOUSE_PAREN))
+                && MatchForType(tokens, TokenType.CLOUSE_PAREN)
+                && MatchForType(tokens, TokenType.BACKSLASH))
             {
                 value = new Goto(token.row, token.column, token.name, cond!);
                 return true;
@@ -140,6 +147,7 @@ public class Parser()
 
     private bool OrExpression(List<Token> tokens, out IExpression<bool>? expression)
     {
+        var startIndex = index;
         if (AndExpression(tokens, out IExpression<bool>? left))
         {
             var token = tokens[index];
@@ -157,13 +165,15 @@ public class Parser()
         }
 
         expression = null;
+        index = startIndex;
         return false;
 
     }
 
     private bool AndExpression(List<Token> tokens, out IExpression<bool>? expression)
     {
-        if (LiteralExpression(tokens, TokenType.BOOLEAN, out IExpression<bool>? left))
+        var startIndex = index;
+        if (ComparerExpression(tokens, out IExpression<bool>? left) || LiteralExpression(tokens, TokenType.BOOLEAN, out left))
         {
             var token = tokens[index];
             if (!MatchForType(tokens, TokenType.AND))
@@ -180,6 +190,26 @@ public class Parser()
         }
 
         expression = null;
+        index = startIndex;
+        return false;
+    }
+
+    private bool ComparerExpression(List<Token> tokens, out IExpression<bool>? expression)
+    {
+        var startIndex = index;
+        List<TokenType> types = [TokenType.LESS, TokenType.GREATER, TokenType.EQUAL_EQUAL, TokenType.LESS_EQUAL, TokenType.GREATER_EQUAL, TokenType.DIFERENT];
+        if (NumericExpression(tokens, out IExpression<int>? left))
+        {
+            var token = tokens[index];
+            if (FirstMatch(tokens, types, out TokenType? type) && NumericExpression(tokens, out IExpression<int>? right))
+            {
+                expression = new BinaryCompareExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
+                return true;
+            }
+        }
+
+        expression = null;
+        index = startIndex;
         return false;
     }
 
@@ -193,6 +223,7 @@ public class Parser()
 
     private bool SumExpression(List<Token> tokens, out IExpression<int>? expression)
     {
+        var startIndex = index;
         if (MultiExpression(tokens, out IExpression<int>? left))
         {
             if (SumExpression(tokens, left!, out expression))
@@ -202,10 +233,12 @@ public class Parser()
         }
 
         expression = null;
+        index = startIndex;
         return false;
     }
     private bool SumExpression(List<Token> tokens, IExpression<int> left, out IExpression<int>? expression)
     {
+        var startIndex = index;
         List<TokenType> tokensTypes = [TokenType.PLUS, TokenType.MINUS];
         var token = tokens[index];
         if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
@@ -230,11 +263,13 @@ public class Parser()
         }
 
         expression = null;
+        index = startIndex;
         return false;
     }
 
     private bool MultiExpression(List<Token> tokens, out IExpression<int>? expression)
     {
+        var startIndex = index;
         if (PowExpression(tokens, out IExpression<int>? left))
         {
             if (MultiExpression(tokens, left!, out expression))
@@ -244,11 +279,13 @@ public class Parser()
         }
 
         expression = null;
+        index = startIndex;
         return false;
     }
     private bool MultiExpression(List<Token> tokens, IExpression<int> left, out IExpression<int>? expression)
     {
         List<TokenType> tokensTypes = [TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULE];
+        var startIndex = index;
         var token = tokens[index];
         if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
         {
@@ -272,6 +309,7 @@ public class Parser()
         }
 
         expression = null;
+        index = startIndex;
         return false;
     }
 
@@ -292,6 +330,7 @@ public class Parser()
 
     private bool PowExpression(List<Token> tokens, out IExpression<int>? expression)
     {
+        var startIndex = index;
         if (LiteralExpression(tokens, TokenType.NUMBER, out IExpression<int>? left))
         {
             var token = tokens[index];
@@ -309,6 +348,7 @@ public class Parser()
         }
 
         expression = null;
+        index = startIndex;
         return false;
     }
     #endregion
@@ -330,14 +370,20 @@ public class Parser()
     private bool LiteralExpression<T>(List<Token> tokens, TokenType type, out IExpression<T>? expression)
         where T : IParsable<T>
     {
+        var startIndex = index;
         var token = tokens[index];
         if (MatchForType(tokens, type) && T.TryParse(token.name, null, out var value))
         {
-            expression = new Literal<T>(value);
+            expression = new Literal<T>(token.row, token.column, value);
             return true;
         }
-
+        if (MatchForType(tokens, TokenType.IDENTIFIER))
+        {
+            expression = new Variable<T>(token.row, token.column, token.name);
+            return true;
+        }
         expression = null;
+        index = startIndex;
         return false;
     }
 

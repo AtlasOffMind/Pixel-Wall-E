@@ -92,23 +92,27 @@ namespace Lexer
                 Token? token;
                 for (int j = 0; j < line[i].Length; j++)
                 {
-                    if (line[i][j] == '\"')
+                    var character = line[i][j];
+                    if (character == '\"')
                         reader = !reader;
-
                     if (j + 1 < line[i].Length && Match(current + line[i][j + 1].ToString()))
                     {
                         current.Append(line[i][++j]);
                         continue;
                     }
 
-                    if (reader || !IsSeparator(current, line[i][j]))
+                    var str = current.ToString();
+                    var temp = str + character;
+                    var isOp = Dictionary.ContainsKey(str) || IsSeparator(character);
+                    if (reader || Dictionary.ContainsKey(temp) || !isOp && character != ' ')
                     {
-                        current.Append(line[i][j]);
+                        current.Append(character);
                         continue;
                     }
                     if (SavingToken(current, i, columnPos, out token))
                         tokens.Add(token!);
                     columnPos = j + 1;
+                    j = isOp ? j - 1 : j;
                 }
                 if (SavingToken(current, i, columnPos, out token))
                     tokens.Add(token!);
@@ -119,14 +123,10 @@ namespace Lexer
             return tokens;
         }
 
-        public static bool IsSeparator(StringBuilder current, char sep)
+        public static bool IsSeparator(char sep)
         {
-            var temp = current.ToString() + sep;
-            if (Dictionary.ContainsKey(temp))
-                return false;
             return sep switch
             {
-                ' ' => true,
                 '+' => true,
                 '-' => true,
                 '*' => true,
@@ -198,7 +198,7 @@ namespace Lexer
                 return false;
             for (int i = 1; i < name.Length - 1; i++)
             {
-                if (!char.IsLetterOrDigit(name[i]) && name[0] != '-') return false;
+                if (!char.IsLetterOrDigit(name[i]) && name[i] != '_') return false;
             }
             return true;
         }

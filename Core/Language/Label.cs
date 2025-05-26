@@ -15,5 +15,6 @@ public class Label(int row, int column, string name) : ASTNode(row, column), IIn
         return true;
     }
 
-    public void Evaluate(Context context) { }
+    //
+    public void Evaluate(Context context) => context.Labels[Name] = Location.Row;
 }

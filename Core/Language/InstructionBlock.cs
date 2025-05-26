@@ -28,4 +28,12 @@ public class InstructionBlock(List<IInstruction> instructions) : IInstruction
             }
         }
     }
+
+    public void SearchLabels(Context context)
+    {
+        foreach (var item in Instructions)
+        {
+           item.SearchLabels(context);
+        }
+    }
 }

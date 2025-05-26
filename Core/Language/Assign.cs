@@ -11,4 +11,9 @@ public class Assign(int row, int column, string variable, IExpression<object> va
     public bool CheckSemantic(Context context) => true;
 
     public void Evaluate(Context context) => context.Variables[Variable] = Value.Evaluate(context)!;
+
+    public void SearchLabels(Context context)
+    {
+        throw new NotImplementedException();
+    }
 }

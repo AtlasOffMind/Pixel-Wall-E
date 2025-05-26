@@ -25,4 +25,9 @@ public class Method(int row, int column, string name, List<IExpression<object>> 
     }
 
     public void Evaluate(Context context) => context.Actions[Name]([.. Params.Select(x => x.Evaluate(context))]);
+
+    public void SearchLabels(Context context)
+    {
+        throw new NotImplementedException();
+    }
 }

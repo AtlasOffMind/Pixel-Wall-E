@@ -16,5 +16,7 @@ public class Label(int row, int column, string name) : ASTNode(row, column), IIn
     }
 
     //
-    public void Evaluate(Context context) => context.Labels[Name] = Location.Row;
+    public void Evaluate(Context context) { }
+    public void SearchLabels(Context context) => context.Labels[Name] = Location.Row;
+
 }

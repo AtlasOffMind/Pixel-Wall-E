@@ -7,6 +7,7 @@ using Core.Extension;
 
 namespace Parser;
 
+//TODO esto ya esta implementado ahora lo que queda por hacer es organizarlo y ahorrarme codigo
 public class Parser()
 {
     public int index;

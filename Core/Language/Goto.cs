@@ -19,4 +19,9 @@ public class Goto(int row, int column, string labelName, IExpression<bool> cond)
         context.JumpCond = Cond.Evaluate(context);
         context.JumpTo = LabelName;
     }
+
+    public void SearchLabels(Context context)
+    {
+        throw new NotImplementedException();
+    }
 }

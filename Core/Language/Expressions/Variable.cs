@@ -3,12 +3,12 @@ using Core.Model;
 
 namespace Core.Language.Expressions;
 
-public class Variable<T>(int row, int column, string name) : Expression<T>(row, column), IExpression<T>
+public class Variable<T>(int row, int column, string name) : ASTNode(row, column), IExpression<T>
 {
     public string Name { get; } = name;
 
-    public override T Evaluate(Context context)
-    {
-        return (T)context.Variables[Name];
-    }
+    public bool CheckSemantic(Context context)
+        => context.Variables.TryGetValue(Name, out object? value) && value is T;
+
+    public T Evaluate(Context context) => (T)context.Variables[Name];
 }

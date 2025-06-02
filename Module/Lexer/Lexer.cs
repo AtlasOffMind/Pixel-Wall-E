@@ -2,6 +2,8 @@
 
 using Core.Enum;
 using Lexer.Model;
+using Core.Model;
+using Core.Error;
 
 namespace Lexer
 {
@@ -30,7 +32,7 @@ namespace Lexer
 
     public class Scanner
     {
-        public static List<Exception> exceptions = [];
+        public static readonly List<SyntaxError> exceptions = [];
         public static readonly Dictionary<string, TokenType> Dictionary = new()
             {
                 //Aritmetic expressions
@@ -85,6 +87,7 @@ namespace Lexer
             List<Token> tokens = [];
             int columnPos = 0;
             bool reader = false;
+            ErrorsDto errors = new();
 
 
             for (int i = 0; i < line.Length; i++)
@@ -120,6 +123,7 @@ namespace Lexer
                 tokens.Add(new Token(i, columnPos, TokenType.BACKSLASH, "\n"));
             }
 
+            errors.Lexer = exceptions;
             return tokens;
         }
 
@@ -167,6 +171,7 @@ namespace Lexer
                 bool istrue;
                 token = null;
                 string name = current.ToString();
+                var location = LocationFactory.Create(i, columnPos, name);
 
                 if (istrue = Dictionary.TryGetValue(name.ToUpper(), out TokenType type))
                 {
@@ -174,17 +179,17 @@ namespace Lexer
                 }
                 else if (name[0] == '"')
                 {
-                    exceptions.Add(new InvalidOperationException(""));
+                    exceptions.Add(new SyntaxError(location, "Is not a valid Color"));
                 }
                 else if (istrue = int.TryParse(name, out _))
                 {
                     token = new(i, columnPos, TokenType.NUMBER, name);
                 }
-                else if (istrue = TryParseIdentifier(name))
+                else if (istrue = TryParseIdentifier(location, name))
                 {
                     token = new Token(i, columnPos, TokenType.IDENTIFIER, $"{name}");
                 }
-                else exceptions.Add(new InvalidOperationException("mmmmmmmmmmmmmmmmmmmmmmm "));
+                else exceptions.Add(new SyntaxError(location, "Can't create the token"));
                 current.Clear();
                 return istrue;
             }
@@ -192,13 +197,17 @@ namespace Lexer
             return false;
         }
 
-        private static bool TryParseIdentifier(string name)
+        private static bool TryParseIdentifier(Location location, string name)
         {
             if (!char.IsLetter(name[0]))
                 return false;
             for (int i = 1; i < name.Length - 1; i++)
             {
-                if (!char.IsLetterOrDigit(name[i]) && name[i] != '_') return false;
+                if (!char.IsLetterOrDigit(name[i]) && name[i] != '_')
+                {
+                    exceptions.Add(new SyntaxError(location, "The idenfiers has only, number, letters, or _ (down line)"));
+                    return false;
+                }
             }
             return true;
         }

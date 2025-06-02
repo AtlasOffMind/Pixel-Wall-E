@@ -6,6 +6,7 @@ public enum TokenType
     PLUS, MINUS,
     DIVISION, MULTIPLICATION, POW,
     OPEN_PAREN, CLOUSE_PAREN, MODULE,
+    CLOUSE_BRACKED, OPEN_BRACKED,
 
     // LITERALS.
     IDENTIFIER, NUMBER,
@@ -17,12 +18,11 @@ public enum TokenType
     DIFERENT,
 
     // KEYWORDS.
-    AND, 
-    GOTO, OR, 
+    AND,
+    GOTO, OR,
     EOF, ASSIGN,
     BACKSLASH, COLOR,
     BOOLEAN,
     COMMA,
-    CLOUSE_BRACKED,
-    OPEN_BRACKED,
+
 }

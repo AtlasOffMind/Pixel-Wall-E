@@ -4,7 +4,8 @@ using Core.Enum;
 
 namespace Core.Language.Expressions;
 
-public class BinaryBoolean(int row, int column, IExpression<bool> left, IExpression<bool> right, BinaryType type) : BinaryExpr<bool, bool>(row, column, left, right)
+public class BinaryBoolean(int row, int column, IExpression<bool> left, IExpression<bool> right, BinaryType type)
+    : BinaryExpr<bool, bool>(row, column, left, right)
 {
     public override bool Evaluate(Context context) => type switch
     {

@@ -33,7 +33,7 @@ public class InstructionBlock(List<IInstruction> instructions) : IInstruction
     {
         foreach (var item in Instructions)
         {
-           item.SearchLabels(context);
+            item.SearchLabels(context);
         }
     }
 }

@@ -1,3 +1,5 @@
+using Core.Model;
+
 namespace Core.Language;
 
 public abstract class ASTNode(int row, int column)

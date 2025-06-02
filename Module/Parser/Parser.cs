@@ -4,6 +4,7 @@ using Core.Language;
 using Lexer.Model;
 using Core.Language.Expressions;
 using Core.Extension;
+using Core.Error;
 
 namespace Parser;
 
@@ -11,6 +12,8 @@ namespace Parser;
 public class Parser()
 {
     public int index;
+    private List<GramaticError> exceptions;
+
     public IInstruction Parse(List<Token> tokens)
     {
         index = 0;
@@ -24,8 +27,13 @@ public class Parser()
         {
             if (MatchForType(tokens, TokenType.GOTO) && TryGOTO(tokens, out IInstruction? value))
                 instructions.Add(value!);
-            else if (MatchForType(tokens, TokenType.IDENTIFIER) && TryIDENTIFIER(tokens, out value))
-                instructions.Add(value!);
+            else if (MatchForType(tokens, TokenType.IDENTIFIER))
+            {
+                if (TryIDENTIFIER(tokens, out value))
+                    instructions.Add(value!);
+                else
+                    exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), "Assign, Parenthesis or Backslash expected"));
+            }
             else
                 JumpingInstruct(tokens);
             //TODO implementar errores en cada Try y si no se encuentran ahi se lo envio desde el jumping
@@ -44,12 +52,13 @@ public class Parser()
     private bool TryIDENTIFIER(List<Token> tokens, out IInstruction? value)
     {
         var token = tokens[index - 1];
+        value = null;
         return tokens[index++].type switch
         {
             TokenType.ASSIGN => TryAssign(tokens, token, out value),
             TokenType.OPEN_PAREN => TryMethod(tokens, token, out value),
             TokenType.BACKSLASH => TryLabel(token, out value),
-            _ => throw new Exception(""),
+            _ => false
         };
     }
     private bool TryAssign(List<Token> tokens, Token token, out IInstruction? value)
@@ -59,6 +68,7 @@ public class Parser()
             value = new Assign(token.row, token.column, token.name, expression!);
             return true;
         }
+        exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
         value = null;
         return false;
     }
@@ -71,18 +81,26 @@ public class Parser()
             expression = boolean!.ToObjectExpression();
             return true;
         }
+        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
+
         index = startIndex;
+
         if (NumericExpression(tokens, out IExpression<int>? num) && (endType == null || MatchForType(tokens, endType.Value)))
         {
             expression = num!.ToObjectExpression();
             return true;
         }
+        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
+
         index = startIndex;
+        
         if (ColorExpression(tokens, out IExpression<string>? str) && (endType == null || MatchForType(tokens, endType.Value)))
         {
             expression = str!.ToObjectExpression();
             return true;
         }
+        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
+
 
         expression = null;
         index = startIndex;
@@ -119,24 +137,51 @@ public class Parser()
 
     private bool TryGOTO(List<Token> tokens, out IInstruction? value)
     {
-        if (MatchForType(tokens, TokenType.OPEN_BRACKED)
-            && MatchForType(tokens, TokenType.IDENTIFIER)
-            && MatchForType(tokens, TokenType.CLOUSE_BRACKED))
+        if (!MatchForType(tokens, TokenType.OPEN_BRACKED))
         {
-            var token = tokens[index - 2];
-            if (MatchForType(tokens, TokenType.OPEN_PAREN)
-                && BooleanExpression(tokens, out IExpression<bool>? cond)
-                && MatchForType(tokens, TokenType.CLOUSE_PAREN)
-                && MatchForType(tokens, TokenType.BACKSLASH))
-            {
-                value = new Goto(token.row, token.column, token.name, cond!);
-                return true;
-            }
+            exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), " '{' or '[' expected"));
+            value = null;
+            return false;
         }
 
-        // TODO Guardar exceptions
-        value = null;
-        return false;
+        if (!MatchForType(tokens, TokenType.IDENTIFIER))
+        {
+            exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), " 'IDENTIFIER' expected"));
+            value = null;
+            return false;
+        }
+        if (!MatchForType(tokens, TokenType.CLOUSE_BRACKED))
+        {
+            exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), " '}' or ']' expected"));
+            value = null;
+            return false;
+        }
+
+        var token = tokens[index - 2];
+
+        if (!MatchForType(tokens, TokenType.OPEN_PAREN))
+        {
+            exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), " '{' or '[' expected"));
+            value = null;
+            return false;
+        }
+        if (!BooleanExpression(tokens, out IExpression<bool>? cond))
+            exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), " bool expected"));
+        if (!MatchForType(tokens, TokenType.CLOUSE_PAREN))
+        {
+            exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), " '}' or ']' expected"));
+            value = null;
+            return false;
+        }
+        if (!MatchForType(tokens, TokenType.BACKSLASH))
+        {
+            exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), " Backslash expected"));
+            value = null;
+            return false;
+        }
+
+        value = new Goto(token.row, token.column, token.name, cond!);
+        return true;
     }
     #endregion
 
@@ -164,6 +209,7 @@ public class Parser()
                 return true;
             }
         }
+        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
 
         expression = null;
         index = startIndex;
@@ -189,6 +235,8 @@ public class Parser()
                 return true;
             }
         }
+        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
+
 
         expression = null;
         index = startIndex;
@@ -208,6 +256,8 @@ public class Parser()
                 return true;
             }
         }
+        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
+
 
         expression = null;
         index = startIndex;
@@ -356,7 +406,6 @@ public class Parser()
 
     private bool ColorExpression(List<Token> tokens, out IExpression<string>? str)
     {
-
         return LiteralExpression(tokens, TokenType.COLOR, out str);
     }
 

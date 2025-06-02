@@ -2,7 +2,7 @@ using Core.Model;
 
 namespace Core.Interface;
 
-public interface IExpression<T> //Expresiones que te devuelven algo
+public interface IExpression<T> : ISemantic //Expresiones que te devuelven algo
 {
     /// <summary>
     /// Hace un recorrido de evaluación en el AST para ejecutar el código

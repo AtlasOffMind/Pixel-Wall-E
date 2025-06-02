@@ -7,16 +7,12 @@ public class Label(int row, int column, string name) : ASTNode(row, column), IIn
 {
     public string Name { get; } = name;
 
-    public bool CheckSemantic(Context context)
-    {
-        if (context.Labels.ContainsKey(Name))
-            return false;
-        context.Labels[Name] = Location.Row;
-        return true;
-    }
+    public void SearchLabels(Context context)
+        => context.Labels[Name] = Location.Row;
 
-    //
+    public bool CheckSemantic(Context context)
+        => context.Labels.TryGetValue(Name, out int value) && value == Location.Row;
+
     public void Evaluate(Context context) { }
-    public void SearchLabels(Context context) => context.Labels[Name] = Location.Row;
 
 }

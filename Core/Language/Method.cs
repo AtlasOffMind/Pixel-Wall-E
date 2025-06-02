@@ -4,30 +4,33 @@ using Core.Model;
 
 namespace Core.Language;
 
-public class Method<T>(int row, int column, string name, List<IExpression<object>> @params) : Expression<T>(row, column), IExpression<T>
+public abstract class BaseMethod(int row, int column, string name, List<IExpression<object>> @params) : ASTNode(row, column), ISemantic
 {
     public string Name { get; } = name;
     public IExpression<object>[] Params { get; } = [.. @params];
 
-    public override T Evaluate(Context context) => (T)context.Functions[Name]([.. Params.Select(x => x.Evaluate(context))]);
+    // TODO hacer q matcheen los tipos de Params con los parametros de las funciones
+    public virtual bool CheckSemantic(Context context)
+    {
+        if (context.Functions.TryGetValue(Name, out FunctionsMethodInfo? function))
+            return function.Types.Length == Params.Length;
+        return context.Actions.TryGetValue(Name, out ActionsMethodInfo? action)
+            && action.Types.Length == Params.Length;
+    }
 }
 
-public class Method(int row, int column, string name, List<IExpression<object>> @params) : ASTNode(row, column), IInstruction
+public class Method<T>(int row, int column, string name, List<IExpression<object>> @params) : BaseMethod(row, column, name, @params), IExpression<T>
 {
-    public string Name { get; } = name;
-    public IExpression<object>[] Params { get; } = [.. @params];
+    public T Evaluate(Context context) => (T)context.Functions[Name].Function([.. Params.Select(x => x.Evaluate(context))]);
 
-    public bool CheckSemantic(Context context)
+    public override bool CheckSemantic(Context context)
     {
-        // TODO hacer checkeo de metodo
-        //context.Actions[Name].Method.GetParameters();
-        throw new NotImplementedException();
+        return base.CheckSemantic(context) && context.Functions[Name].ReturnType == typeof(T);
     }
+}
 
-    public void Evaluate(Context context) => context.Actions[Name]([.. Params.Select(x => x.Evaluate(context))]);
-
-    public void SearchLabels(Context context)
-    {
-        throw new NotImplementedException();
-    }
+public class Method(int row, int column, string name, List<IExpression<object>> @params) : BaseMethod(row, column, name, @params), IInstruction
+{
+    public void SearchLabels(Context context) { }
+    public void Evaluate(Context context) => context.Actions[Name].Action([.. Params.Select(x => x.Evaluate(context))]);
 }

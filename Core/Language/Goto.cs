@@ -11,7 +11,8 @@ public class Goto(int row, int column, string labelName, IExpression<bool> cond)
 
     public bool CheckSemantic(Context context)
     {
-        throw new NotImplementedException();
+        return context.Labels.ContainsKey(LabelName)
+            && Cond.CheckSemantic(context);
     }
 
     public void Evaluate(Context context)
@@ -20,8 +21,5 @@ public class Goto(int row, int column, string labelName, IExpression<bool> cond)
         context.JumpTo = LabelName;
     }
 
-    public void SearchLabels(Context context)
-    {
-        throw new NotImplementedException();
-    }
+    public void SearchLabels(Context context) { }
 }

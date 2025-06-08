@@ -5,3 +5,6 @@ dotnet_style_namespace_match_folder = true
 
 # IDE0022: Use block body for method
 csharp_style_expression_bodied_methods = false
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none

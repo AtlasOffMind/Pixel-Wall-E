@@ -22,8 +22,6 @@ public class Program
         var ast = parser.Parse(arr);
 
         // TODO por cada nodo revisar su checkeo, ver semanticamente cada nodo cuando da error
-        //ejemplo: en assign declarar 2 veces la misma variable o si la declaran 2 veces con tipo distinto
-        //       : cuando una suma no es valida, etc
         ast.SearchLabels(context);
         ast.CheckSemantic(context);
         ast.Evaluate(context);

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj": {}
+    "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj": {}
   },
   "projects": {
-    "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj": {
+    "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
+        "projectUniqueName": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
         "projectName": "Core",
-        "projectPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
+        "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\obj\\",
+        "outputPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -37,7 +37,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -53,23 +54,37 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.16, 8.0.16]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.16, 8.0.16]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.16, 8.0.16]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj": {
+    "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj",
+        "projectUniqueName": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj",
         "projectName": "Lexer",
-        "projectPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj",
+        "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\obj\\",
+        "outputPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -84,8 +99,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj": {
-                "projectPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj"
+              "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj": {
+                "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj"
               }
             }
           }
@@ -99,7 +114,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -115,12 +131,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.16, 8.0.16]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.16, 8.0.16]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.16, 8.0.16]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

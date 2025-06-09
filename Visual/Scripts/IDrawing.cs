@@ -1,9 +1,24 @@
-namespace MyApp;
+using System.Drawing;
+using Avalonia.Media;
+using Color = Avalonia.Media.Color;
 
+namespace Visual.Scripts;
 public interface IDrawing
 {
-    bool exist_walle { get; set; }
+    bool Exist_walle { get; set; }
+
+    Action Action { get; set; }
     Wall_e Wall_E { get; set; }
-    double GetActualSize();
+    IBrush Brush { get; set; }
+    PWBrush PWBrush { get; set; }
+    //Rectangle[,] RectanglesMap { get; set; }
+
+    void GetSolidColorBrush(int x, int y, out Color? color);
+
+    //setear a walle como hijo del roadmap
     void RowMapChildWallE(Wall_e wall_E);
+
+    double GetActualSize();
+    int GetDimension();
+
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "8aWTBu73zvA=",
+  "dgSpecHash": "UZNd5p3ME6A=",
   "success": true,
-  "projectFilePath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
+  "projectFilePath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.16\\microsoft.netcore.app.ref.8.0.16.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.16\\microsoft.windowsdesktop.app.ref.8.0.16.nupkg.sha512",
@@ -13,9 +13,9 @@
       "code": "NU1900",
       "level": "Warning",
       "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
-      "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
+      "projectPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
+      "filePath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
       "targetGraphs": []
     }
   ]

@@ -2,8 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 
-namespace MyApp;
-
+namespace Visual.Scripts;
 public class Wall_e()
 {
     public Image walleImage = new()

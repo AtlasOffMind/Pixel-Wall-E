@@ -9,7 +9,7 @@ public abstract class BaseMethod(int row, int column, string name, List<IExpress
     public string Name { get; } = name;
     public IExpression<object>[] Params { get; } = [.. @params];
 
-    // TODO hacer q matcheen los tipos de Params con los parametros de las funciones
+    
     public virtual bool CheckSemantic(Context context)
     {
         if (context.Functions.TryGetValue(Name, out FunctionsMethodInfo? function))

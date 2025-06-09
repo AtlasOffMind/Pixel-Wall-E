@@ -1,16 +1,22 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Visual.Scripts;
+using Action = Visual.Scripts.Action;
 
 
 namespace MyApp;
-
-public partial class MainWindow : Window
+public partial class MainWindow : Window, IDrawing
 {
-    public Wall_e wall_E;
-    private double cellSize;
-    private Rectangle[,] RectanglesMap;
+    public bool Exist_walle { get; set; }
+    private double CellSize { get; set; }
+    public Wall_e Wall_E { get; set; }
+    public Rectangle[,] RectanglesMap { get; set; }
+    public PWBrush PWBrush { get; set; }
+    public Action Action { get; set; }
+    public IBrush Brush { get; set; }
 
     public MainWindow()
     {
@@ -22,15 +28,17 @@ public partial class MainWindow : Window
     private void InstantiatingVariables()
     {
         var dimesion = (int)CanvasResize.Value!;
-        cellSize = double.Min(RoadMap.Width, RoadMap.Height) / dimesion;
+        CellSize = double.Min(RoadMap.Width, RoadMap.Height) / dimesion;
         RectanglesMap = new Rectangle[dimesion, dimesion];
-        wall_E = new Wall_e();
-
+        Wall_E = new Wall_e();
+        Exist_walle = false;
+        PWBrush = new PWBrush(Colors.White, 1);
+        Action = new Action(this);
     }
 
     private void DrawingRoadMap()
     {
-        var actualSize = cellSize * ZoomButton.Value * 0.01;
+        var actualSize = CellSize * ZoomButton.Value * 0.01;
         var dimesion = (int)CanvasResize.Value!;
         RectanglesMap = new Rectangle[dimesion, dimesion];
         RoadMap.Height = actualSize * dimesion;
@@ -48,7 +56,8 @@ public partial class MainWindow : Window
             Width = actualSize,
             Height = actualSize,
             Stroke = Brushes.Black,
-            StrokeThickness = 0.2
+            StrokeThickness = 0.2,
+            Fill = new SolidColorBrush(Colors.White),
         };
 
         Canvas.SetLeft(cell, actualSize * j);
@@ -56,9 +65,42 @@ public partial class MainWindow : Window
         RoadMap.Children.Add(cell);
         RectanglesMap[i, j] = cell;
     }
+    //TODO aun no se como hacer que pinte
+    public void Painting()
+    {
+        if (Exist_walle && PWBrush.Size > 0)
+        {
+
+
+        }
+        else if (!Exist_walle)
+        {
+            throw new NotImplementedException("There is no Wall-E in the current context");
+        }
+        else if (PWBrush.Size <= 0)
+        {
+            throw new NotImplementedException("There is no Wall-E in the current context");
+        }
+    }
+
+    public void GetSolidColorBrush(int x, int y, out Color? color)
+    {
+        color = null;
+        if (RectanglesMap[x, y].Fill is SolidColorBrush brush)
+        {
+            color = brush.Color;
+        }
+
+    }
+
+    public void RowMapChildWallE(Wall_e wall_E)
+    {
+        RoadMap.Children.Add(wall_E.walleImage);
+    }
+
+    public int GetDimension() => (int)CanvasResize.Value!;
+    public double GetActualSize() => CellSize * ZoomButton.Value * 0.01;
 }
-
-
 
 public partial class MainWindow : Window
 {
@@ -70,7 +112,7 @@ public partial class MainWindow : Window
 
     public void ZoomSlideOnChange(object sender, RoutedEventArgs e)
     {
-        var actualSize = cellSize * ZoomButton.Value * 0.01;
+        var actualSize = CellSize * ZoomButton.Value * 0.01;
         RoadMap.Height = actualSize * (double)CanvasResize.Value!;
         RoadMap.Width = actualSize * (double)CanvasResize.Value!;
         for (int i = 0; i < RoadMap.Children.Count; i++)
@@ -85,5 +127,7 @@ public partial class MainWindow : Window
             Canvas.SetTop(item, actualSize * row);
         }
     }
+
+
 
 }

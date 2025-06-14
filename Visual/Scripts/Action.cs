@@ -5,32 +5,25 @@ using Avalonia.Controls;
 namespace Visual.Scripts;
 public class Action(IDrawing drawing)
 {
-    public Location GetRealPos(int x, int y)
-    {
-        var actualSize = drawing.GetActualSize();
-        return new Location(x * (int)actualSize, y * (int)actualSize);
-    }
-
-    public Location GetRealPos(Wall_e wall_E)
-    {
-        var actualSize = drawing.GetActualSize();
-        return new Location(wall_E.colPos * (int)actualSize, wall_E.rowPos * (int)actualSize);
-    }
-
     public void Spawn(int x, int y)
     {
         if (!drawing.Exist_walle)
         {
-            //TODO si esto no lo uso quitarlo hasta del objeto
-            drawing.Wall_E.rowPos = y;
-            drawing.Wall_E.colPos = x;
+            if (x > 0 && x < drawing.GetDimension() && y > 0 && y < drawing.GetDimension())
+            {
+                //TODO si esto no lo uso quitarlo hasta del objeto
+                drawing.Wall_E.rowPos = y;
+                drawing.Wall_E.colPos = x;
 
-            var temPos = GetRealPos(x, y);
-            Canvas.SetLeft(drawing.Wall_E.walleImage, temPos.y);
-            Canvas.SetTop(drawing.Wall_E.walleImage, temPos.x);
-            drawing.RowMapChildWallE(drawing.Wall_E);
+                var temPos = drawing.GetRealPos(x, y);
+                drawing.RowMapChildWallE(temPos.x, temPos.y);
 
-            drawing.Exist_walle = true;
+                drawing.Exist_walle = true;
+            }
+            else
+            {
+                throw new NotImplementedException("Invalid position");
+            }
         }
         else
         {
@@ -63,7 +56,10 @@ public class Action(IDrawing drawing)
 
     public void Size(int k)
     {
-        drawing.PWBrush.Size = k;
+        if (k > 0)
+            drawing.PWBrush.Size = k - (k + 1) % 2;
+
+        else throw new NotImplementedException("The brush size must be a number higher than 0");
     }
 
     public void DrawLine(int dirX, int dirY, int distance) { }

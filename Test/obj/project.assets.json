@@ -70,11 +70,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Test\\Test.csproj",
+      "projectUniqueName": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Test\\Test.csproj",
       "projectName": "Test",
-      "projectPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Test\\Test.csproj",
+      "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Test\\Test.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Test\\obj\\",
+      "outputPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Test\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -89,11 +89,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj": {
-              "projectPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj"
+            "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj": {
+              "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Lexer\\Lexer.csproj"
             },
-            "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Parser\\Parser.csproj": {
-              "projectPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Parser\\Parser.csproj"
+            "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Parser\\Parser.csproj": {
+              "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Module\\Parser\\Parser.csproj"
             }
           }
         }

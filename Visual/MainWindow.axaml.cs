@@ -5,7 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Visual.Scripts;
 using Action = Visual.Scripts.Action;
-
+using Location = Visual.Scripts.Location;
 
 namespace MyApp;
 public partial class MainWindow : Window, IDrawing
@@ -15,8 +15,9 @@ public partial class MainWindow : Window, IDrawing
     public Wall_e Wall_E { get; set; }
     public Rectangle[,] RectanglesMap { get; set; }
     public PWBrush PWBrush { get; set; }
-    public Action Action { get; set; }
     public IBrush Brush { get; set; }
+
+    public Action Action { get; set; }
 
     public MainWindow()
     {
@@ -34,6 +35,7 @@ public partial class MainWindow : Window, IDrawing
         Exist_walle = false;
         PWBrush = new PWBrush(Colors.White, 1);
         Action = new Action(this);
+
     }
 
     private void DrawingRoadMap()
@@ -65,21 +67,47 @@ public partial class MainWindow : Window, IDrawing
         RoadMap.Children.Add(cell);
         RectanglesMap[i, j] = cell;
     }
+
     //TODO aun no se como hacer que pinte
-    public void Painting()
+    public void Painting(int directionX, int directionY)
     {
         if (Exist_walle && PWBrush.Size > 0)
         {
+            RowMapChildWallE(Wall_E.colPos + directionX, Wall_E.rowPos + directionY);
+            RectanglesMap[Wall_E.colPos, Wall_E.rowPos].Fill = new SolidColorBrush(PWBrush.CurrentColor);
+            var size = PWBrush.Size - 1;
 
+            if (directionX * directionY == 0)
+            {
+                size /= 2;
+                var dirx = (directionX + 1) % 2;
+                var diry = (directionY + 1) % 2;
 
+                DrawBrushWidth(dirx, diry, size);
+                DrawBrushWidth(-dirx, -diry, size);
+            }
+            else
+            {
+                var dirx = directionX;
+                var diry = directionY;
+
+                DrawBrushWidth(dirx, 0, size);
+                DrawBrushWidth(0, diry, size);
+            }
         }
         else if (!Exist_walle)
         {
             throw new NotImplementedException("There is no Wall-E in the current context");
         }
-        else if (PWBrush.Size <= 0)
+    }
+
+    public void DrawBrushWidth(int dirx, int diry, int distance)
+    {
+        (int x, int y) = (Wall_E.colPos, Wall_E.rowPos);
+        for (int i = 1; i <= distance; i++)
         {
-            throw new NotImplementedException("There is no Wall-E in the current context");
+            (int newX, int newY) = (x + dirx * i, y + diry * i);
+            RectanglesMap[newX, newY].Fill = new SolidColorBrush(PWBrush.CurrentColor);
         }
     }
 
@@ -93,13 +121,52 @@ public partial class MainWindow : Window, IDrawing
 
     }
 
-    public void RowMapChildWallE(Wall_e wall_E)
+    public Color FromStringToColor(string Color)
     {
-        RoadMap.Children.Add(wall_E.walleImage);
+        Color CurrentColor = new();
+
+        CurrentColor = Color switch
+        {
+            "Red" => Colors.Red,
+            "Blue" => Colors.Blue,
+            "Green" => Colors.Green,
+            "Yellow" => Colors.Yellow,
+            "Orange" => Colors.Orange,
+            "Purple" => Colors.Purple,
+            "Black" => Colors.Black,
+            "White" => Colors.White,
+            "Transparent" => Colors.Transparent,
+            _ => throw new NotImplementedException("that's not a valid color"),
+        };
+
+        return CurrentColor;
     }
+
+    public void RowMapChildWallE(int x, int y)
+    {
+        var location = GetRealPos(x, y);
+        Canvas.SetLeft(Wall_E.walleImage, location.x);
+        Canvas.SetTop(Wall_E.walleImage, location.y);
+
+        if (!Exist_walle)
+            RoadMap.Children.Add(Wall_E.walleImage);
+    }
+
 
     public int GetDimension() => (int)CanvasResize.Value!;
     public double GetActualSize() => CellSize * ZoomButton.Value * 0.01;
+
+    public Location GetRealPos(int x, int y)
+    {
+        var actualSize = GetActualSize();
+        return new Location(x * (int)actualSize, y * (int)actualSize);
+    }
+
+    public Location GetRealPos(Wall_e wall_E)
+    {
+        var actualSize = GetActualSize();
+        return new Location(wall_E.colPos * (int)actualSize, wall_E.rowPos * (int)actualSize);
+    }
 }
 
 public partial class MainWindow : Window

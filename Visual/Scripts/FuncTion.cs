@@ -29,7 +29,7 @@ public class FuncTion(IDrawing drawing)
             for (int j = y1; j < y2; j++)
             {
                 drawing.GetSolidColorBrush(i, j, out Color? temp);
-                if (temp == FromStringToColor(color))
+                if (temp == drawing.FromStringToColor(color))
                     count++;
             }
 
@@ -40,7 +40,7 @@ public class FuncTion(IDrawing drawing)
     //Retorna 1 si el color de la brocha actual es string color, 0 en caso contrario.
     public int IsBrushColor(string color)
     {
-        return drawing.PWBrush.CurrentColor == FromStringToColor(color) ? 1 : 0;
+        return drawing.PWBrush.CurrentColor == drawing.FromStringToColor(color) ? 1 : 0;
     }
     //Retorna 1 si el tamaño de la brocha actual es size, 0 en caso contrario.
     public int IsBrushSize(int size)
@@ -54,30 +54,10 @@ public class FuncTion(IDrawing drawing)
         location.y += vertical;
 
         drawing.GetSolidColorBrush(location.x, location.y, out Color? temp);
-        
-        return temp == FromStringToColor(color) ? 1 : 0;
+
+        return temp == drawing.FromStringToColor(color) ? 1 : 0;
 
 
     }
-    private static Color FromStringToColor(string Color)
-    {
-        Color CurrentColor = new();
-
-        CurrentColor = Color switch
-        {
-            "Red" => Colors.Red,
-            "Blue" => Colors.Blue,
-            "Green" => Colors.Green,
-            "Yellow" => Colors.Yellow,
-            "Orange" => Colors.Orange,
-            "Purple" => Colors.Purple,
-            "Black" => Colors.Black,
-            "White" => Colors.White,
-            "Transparent" => Colors.Transparent,
-            _ => throw new NotImplementedException("that's not a valid color"),
-        };
-
-        return CurrentColor;
-
-    }
+    
 }

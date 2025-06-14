@@ -9,28 +9,36 @@ public abstract class BaseMethod(int row, int column, string name, List<IExpress
     public string Name { get; } = name;
     public IExpression<object>[] Params { get; } = [.. @params];
 
-    
+
     public virtual bool CheckSemantic(Context context)
     {
-        if (context.Functions.TryGetValue(Name, out FunctionsMethodInfo? function))
+        if (context.Functions.GetMethodInfo(Name, out var function))
             return function.Types.Length == Params.Length;
-        return context.Actions.TryGetValue(Name, out ActionsMethodInfo? action)
+        return context.Actions.GetMethodInfo(Name, out var action)
             && action.Types.Length == Params.Length;
     }
 }
 
 public class Method<T>(int row, int column, string name, List<IExpression<object>> @params) : BaseMethod(row, column, name, @params), IExpression<T>
 {
-    public T Evaluate(Context context) => (T)context.Functions[Name].Function([.. Params.Select(x => x.Evaluate(context))]);
+    public T Evaluate(Context context)
+    {
+        context.Functions.GetMethodInfo(Name, out var function);
+        return (T)function.Function([.. Params.Select(x => x.Evaluate(context))]);
+    }
 
     public override bool CheckSemantic(Context context)
-    {
-        return base.CheckSemantic(context) && context.Functions[Name].ReturnType == typeof(T);
-    }
+        => base.CheckSemantic(context)
+        && context.Functions.GetMethodInfo(Name, out var methodInfo)
+        && methodInfo.ReturnType == typeof(T);
 }
 
 public class Method(int row, int column, string name, List<IExpression<object>> @params) : BaseMethod(row, column, name, @params), IInstruction
 {
     public void SearchLabels(Context context) { }
-    public void Evaluate(Context context) => context.Actions[Name].Action([.. Params.Select(x => x.Evaluate(context))]);
+    public void Evaluate(Context context)
+    {
+        context.Actions.GetMethodInfo(Name, out var methodInfo);
+        methodInfo.Action([.. Params.Select(x => x.Evaluate(context))]);
+    }
 }

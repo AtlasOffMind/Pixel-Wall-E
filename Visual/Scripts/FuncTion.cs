@@ -1,21 +1,20 @@
 using System;
+using System.Linq;
 using Avalonia.Media;
-
+using Core.Model;
 
 namespace Visual.Scripts;
-public class FuncTion(IDrawing drawing)
+public class FuncTion(IDrawing drawing) : IContextFunctions
 {
     // Retorna el valor X de la posici´ on actual de Wall-E.
     public int GetActualX()
     {
-        var i = drawing.Action.GetRealPos(drawing.Wall_E);
-        return i.x;
+        return drawing.Wall_E.colPos;
     }
     // Retorna el valor Y de la posicion actual de Wall-E.
     public int GetActualY()
     {
-        var i = drawing.Action.GetRealPos(drawing.Wall_E);
-        return i.y;
+        return drawing.Wall_E.rowPos;
     }
     // Retorna tamaño largo y ancho del canvas. Para un canvas de n×n se retorna n.
     public int GetCanvasSize()
@@ -32,8 +31,6 @@ public class FuncTion(IDrawing drawing)
                 if (temp == drawing.FromStringToColor(color))
                     count++;
             }
-
-
         return count;
     }
 
@@ -47,17 +44,26 @@ public class FuncTion(IDrawing drawing)
     {
         return drawing.PWBrush.Size == size ? 1 : 0;
     }
+
     public int IsCanvasColor(string color, int vertical, int horizontal)
     {
-        Location location = drawing.Action.GetRealPos(drawing.Wall_E);
-        location.x += horizontal;
-        location.y += vertical;
+        var x = drawing.Wall_E.colPos + horizontal;
+        var y = drawing.Wall_E.rowPos + vertical;
 
-        drawing.GetSolidColorBrush(location.x, location.y, out Color? temp);
-
+        drawing.GetSolidColorBrush(x, y, out Color? temp);
         return temp == drawing.FromStringToColor(color) ? 1 : 0;
-
-
     }
-    
+
+    public bool GetMethodInfo(string name, out FunctionsMethodInfo? methodInfo)
+    {
+        methodInfo = null;
+        var method = GetType().GetMethods().FirstOrDefault(x => x.Name == name);
+        if (method == null)
+            return false;
+
+        object functions(object[] x) => method.Invoke(this, x)!;
+        Type[] types = [.. method.GetParameters().Select(x => x.ParameterType)];
+        methodInfo = new FunctionsMethodInfo(functions, types, method.ReturnType);
+        return false;
+    }
 }

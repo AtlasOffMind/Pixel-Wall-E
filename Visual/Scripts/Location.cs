@@ -1,6 +1,6 @@
 namespace Visual.Scripts;
-public struct Location(int x, int y)
+public struct Location(double x, double y)
 {
-    public int x = x;
-    public int y = y;
+    public double x = x;
+    public double y = y;
 }

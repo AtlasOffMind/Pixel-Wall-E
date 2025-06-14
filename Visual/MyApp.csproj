@@ -18,5 +18,12 @@
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Module\Lexer\Lexer.csproj" />
+    <ProjectReference Include="..\Module\Parser\Parser.csproj" />
   </ItemGroup>
 </Project>

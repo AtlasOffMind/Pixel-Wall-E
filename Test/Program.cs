@@ -10,7 +10,7 @@ public class Program
     {
         var fileName = "Test File.txt";
         var parser = new Parser.Parser();
-        var context = new Context([], []);
+        var context = new Context(, );
 
         var text = TextReader.TextRead(fileName);
 

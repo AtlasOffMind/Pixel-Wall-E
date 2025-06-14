@@ -33,6 +33,11 @@ public class ObjectExpression<T>(IExpression<T> expression) : IExpression<object
 {
     public IExpression<T> Expression { get; } = expression;
 
+    public bool CheckSemantic(Context context)
+    {
+        return Expression.CheckSemantic(context);
+    }
+
     public object Evaluate(Context context)
     {
         return Expression.Evaluate(context)!;

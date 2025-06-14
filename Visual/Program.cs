@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using MyApp;
 using System;
 
 namespace Visual.Scripts; class Program

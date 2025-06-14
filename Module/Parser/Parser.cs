@@ -12,7 +12,7 @@ namespace Parser;
 public class Parser()
 {
     public int index;
-    private List<GramaticError> exceptions;
+    private List<GramaticError> exceptions = [];
 
     public IInstruction Parse(List<Token> tokens)
     {
@@ -93,7 +93,7 @@ public class Parser()
         else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
 
         index = startIndex;
-        
+
         if (ColorExpression(tokens, out IExpression<string>? str) && (endType == null || MatchForType(tokens, endType.Value)))
         {
             expression = str!.ToObjectExpression();

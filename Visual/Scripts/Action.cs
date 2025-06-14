@@ -1,23 +1,19 @@
 using System;
 using Avalonia.Media;
 using Avalonia.Controls;
+using Core.Model;
+using System.Linq;
 
 namespace Visual.Scripts;
-public class Action(IDrawing drawing)
+public class Action(IDrawing drawing) : IContextActions
 {
     public void Spawn(int x, int y)
     {
         if (!drawing.Exist_walle)
         {
-            if (x > 0 && x < drawing.GetDimension() && y > 0 && y < drawing.GetDimension())
+            if (drawing.IsValidPos(x, y))
             {
-                //TODO si esto no lo uso quitarlo hasta del objeto
-                drawing.Wall_E.rowPos = y;
-                drawing.Wall_E.colPos = x;
-
-                var temPos = drawing.GetRealPos(x, y);
-                drawing.RowMapChildWallE(temPos.x, temPos.y);
-
+                drawing.RowMapChildWallE(x, y);
                 drawing.Exist_walle = true;
             }
             else
@@ -33,10 +29,11 @@ public class Action(IDrawing drawing)
 
     public void Color(string Color)
     {
+        string color = Color.Substring(1, Color.Length - 2);
         Color actualColorBrush = drawing.PWBrush.CurrentColor;
         drawing.Brush = new SolidColorBrush(drawing.PWBrush.CurrentColor);
 
-        drawing.PWBrush.CurrentColor = Color switch
+        drawing.PWBrush.CurrentColor = color switch
         {
             "Red" => Colors.Red,
             "Blue" => Colors.Blue,
@@ -62,24 +59,88 @@ public class Action(IDrawing drawing)
         else throw new NotImplementedException("The brush size must be a number higher than 0");
     }
 
-    public void DrawLine(int dirX, int dirY, int distance) { }
+    public void DrawLine(int dirX, int dirY, int distance)
+    {
+        dirX = int.Sign(dirX);
+        dirY = int.Sign(dirY);
+        int size = drawing.PWBrush.Size;
 
-    public void DrawCircle(int dirX, int dirY, int radius) { }
+        drawing.RectanglesMap[drawing.Wall_E.colPos, drawing.Wall_E.rowPos].Fill = new SolidColorBrush(drawing.PWBrush.CurrentColor);
 
-    public void DrawRectangle(int dirX, int dirY, int distance, int width, int height) { }
-    public void Fill() { }
-    //Esto modifica el color del pincel existente y afectará todo lo que lo esté usando (por ejemplo, si varias celdas comparten el mismo pincel, cambiará en todas).
-    //     var brush = Brush as SolidColorBrush;
-    // if (brush != null)
-    // {
-    //     brush.Color = Colors.Red;
-    // }
+        for (int i = 0; i < distance; i++)
+        {
+            if (distance - i < drawing.PWBrush.Size)
+                drawing.PWBrush.Size = distance - i;
+            drawing.Painting(dirX, dirY);
+        }
+        drawing.PWBrush.Size = size;
+    }
 
-    //Esto es para dibujar los rectangulos en un color X
-    // var celda = new Rectangle
-    // {
-    //     Width = 50,
-    //     Height = 50,
-    //     Fill = _colorSeleccionado // el pincel
-    // };
+    public void DrawCircle(int dirX, int dirY, int radius)
+    {
+        dirX = int.Sign(dirX);
+        dirY = int.Sign(dirY);
+
+        int p = 1 - radius;
+        int xc = drawing.Wall_E.colPos + dirX * radius;
+        int yc = drawing.Wall_E.rowPos + dirY * radius;
+
+        for (int x = 0, y = radius; x < y; x++)
+        {
+            if (p < 0)
+            {
+                p += 2 * x + 1;
+            }
+            else
+            {
+                y--;
+                p += 2 * (x - y) + 1;
+            }
+
+            drawing.DibujarOctantes(xc, yc, x, y);
+        }
+        drawing.RowMapChildWallE(xc, yc);
+    }
+
+    public void DrawRectangle(int dirX, int dirY, int distance, int width, int height)
+    {
+        if (drawing.IsValidPos(dirX, dirY))
+        {
+            (int x, int y)[] dir = [(1, 0), (0, 1), (-1, 0), (0, -1)];
+            dirX = int.Sign(dirX);
+            dirY = int.Sign(dirY);
+            var midX = drawing.Wall_E.colPos + dirX * distance;
+            var midY = drawing.Wall_E.rowPos + dirY * distance;
+
+            // Punto A del rectangulo 
+            (int x, int y) = (drawing.Wall_E.colPos - width, drawing.Wall_E.rowPos - height);
+
+            drawing.RowMapChildWallE(x, y);
+            foreach (var item in dir)
+            {
+                var length = item.x != 0 ? width : height;
+                length = 2 * length - 1;
+                DrawLine(item.x, item.y, length);
+            }
+            drawing.RowMapChildWallE(midX, midY);
+        }
+    }
+
+    public void Fill()
+    {
+
+    }
+
+    public bool GetMethodInfo(string name, out ActionsMethodInfo? methodInfo)
+    {
+        methodInfo = null;
+        var method = GetType().GetMethods().FirstOrDefault(x => x.Name == name);
+        if (method == null)
+            return false;
+
+        void actions(object[] x) => method.Invoke(this, x);
+        Type[] types = [.. method.GetParameters().Select(x => x.ParameterType)];
+        methodInfo = new ActionsMethodInfo(actions, types);
+        return false;
+    }
 }

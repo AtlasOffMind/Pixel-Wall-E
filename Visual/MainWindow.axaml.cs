@@ -1,11 +1,21 @@
 using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
+using Core.Model;
+using Lexer;
 using Visual.Scripts;
 using Action = Visual.Scripts.Action;
 using Location = Visual.Scripts.Location;
+
+//using MessageBox.Avalonia.Enums;
+//using MessageBox.Avalonia;
 
 namespace MyApp;
 public partial class MainWindow : Window, IDrawing
@@ -18,6 +28,7 @@ public partial class MainWindow : Window, IDrawing
     public IBrush Brush { get; set; }
 
     public Action Action { get; set; }
+    public FuncTion FuncTion { get; set; }
 
     public MainWindow()
     {
@@ -35,7 +46,7 @@ public partial class MainWindow : Window, IDrawing
         Exist_walle = false;
         PWBrush = new PWBrush(Colors.White, 1);
         Action = new Action(this);
-
+        FuncTion = new FuncTion(this);
     }
 
     private void DrawingRoadMap()
@@ -62,8 +73,8 @@ public partial class MainWindow : Window, IDrawing
             Fill = new SolidColorBrush(Colors.White),
         };
 
-        Canvas.SetLeft(cell, actualSize * j);
-        Canvas.SetTop(cell, actualSize * i);
+        Canvas.SetLeft(cell, actualSize * i);
+        Canvas.SetTop(cell, actualSize * j);
         RoadMap.Children.Add(cell);
         RectanglesMap[i, j] = cell;
     }
@@ -123,9 +134,7 @@ public partial class MainWindow : Window, IDrawing
 
     public Color FromStringToColor(string Color)
     {
-        Color CurrentColor = new();
-
-        CurrentColor = Color switch
+        Color CurrentColor = Color switch
         {
             "Red" => Colors.Red,
             "Blue" => Colors.Blue,
@@ -145,11 +154,17 @@ public partial class MainWindow : Window, IDrawing
     public void RowMapChildWallE(int x, int y)
     {
         var location = GetRealPos(x, y);
+
+        Wall_E.colPos = x;
+        Wall_E.rowPos = y;
         Canvas.SetLeft(Wall_E.walleImage, location.x);
         Canvas.SetTop(Wall_E.walleImage, location.y);
 
-        if (!Exist_walle)
-            RoadMap.Children.Add(Wall_E.walleImage);
+        if (Exist_walle)
+            return;
+        Wall_E.walleImage.Width = GetActualSize();
+        Wall_E.walleImage.Height = GetActualSize();
+        RoadMap.Children.Add(Wall_E.walleImage);
     }
 
 
@@ -159,13 +174,39 @@ public partial class MainWindow : Window, IDrawing
     public Location GetRealPos(int x, int y)
     {
         var actualSize = GetActualSize();
-        return new Location(x * (int)actualSize, y * (int)actualSize);
+        return new Location(x * actualSize, y * actualSize);
     }
 
     public Location GetRealPos(Wall_e wall_E)
     {
         var actualSize = GetActualSize();
         return new Location(wall_E.colPos * (int)actualSize, wall_E.rowPos * (int)actualSize);
+    }
+
+    public bool IsValidPos(int x, int y) => (x >= 0 && x < GetDimension() && y >= 0 && y < GetDimension()) ? true : false;
+
+    public void DibujarOctantes(int xc, int yc, int x, int y)
+    {
+        Painting(xc + x, yc + y);
+        Painting(xc - x, yc + y);
+        Painting(xc + x, yc - y);
+        Painting(xc - x, yc - y);
+        Painting(xc + y, yc + x);
+        Painting(xc - y, yc + x);
+        Painting(xc + y, yc - x);
+        Painting(xc - y, yc - x);
+    }
+
+    public void ClearCanvas()
+    {
+        foreach (var item in RoadMap.Children)
+        {
+            if (item is not Rectangle rectangle)
+                continue;
+            rectangle.Fill = Brushes.White;
+        }
+        RoadMap.Children.Remove(Wall_E.walleImage);
+        Exist_walle = false;
     }
 }
 
@@ -184,7 +225,7 @@ public partial class MainWindow : Window
         RoadMap.Width = actualSize * (double)CanvasResize.Value!;
         for (int i = 0; i < RoadMap.Children.Count; i++)
         {
-            var item = RoadMap.Children[i] as Rectangle;
+            var item = RoadMap.Children[i];
             var col = Canvas.GetLeft(item!) / item!.Width;
             var row = Canvas.GetTop(item!) / item!.Height;
 
@@ -195,6 +236,59 @@ public partial class MainWindow : Window
         }
     }
 
+    public void Execute_Click(object sender, RoutedEventArgs e)
+    {
+        ClearCanvas();
 
+        var parser = new Parser.Parser();
+        var context = new Context(FuncTion, Action);
 
+        var code = TextEditor.Text;
+        var lines = code!.Split("\n");
+        var tokens = Scanner.Tokenizer(lines);
+        var ast = parser.Parse(tokens);
+
+        ast.SearchLabels(context);
+        ast.CheckSemantic(context);
+        try
+        {
+            ast.Evaluate(context);
+        }
+        catch (Exception ex)
+        {
+            ex = ex is TargetInvocationException target ? target.InnerException! : ex;
+
+        }
+    }
+
+    public async void ToSave(object sender, RoutedEventArgs e)
+    {
+        var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
+        var options = new FilePickerSaveOptions()
+        {
+            DefaultExtension = ".pw",
+            SuggestedStartLocation = dir,
+        };
+
+        var text = TextEditor.Text;
+        var storages = await StorageProvider.SaveFilePickerAsync(options);
+        var stream = await storages!.OpenWriteAsync();
+        using var writer = new StreamWriter(stream);
+        writer.WriteLine(text);
+
+    }
+    public async void ToLoad(object sender, RoutedEventArgs e)
+    {
+        var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
+        var options = new FilePickerOpenOptions()
+        {
+            FileTypeFilter = [new FilePickerFileType("*.pw")],
+            SuggestedStartLocation = dir
+        };
+        var storages = await StorageProvider.OpenFilePickerAsync(options);
+        var file = storages.FirstOrDefault();
+        var stream = await file!.OpenReadAsync();
+        using var reader = new StreamReader(stream);
+        TextEditor.Text = reader.ReadToEnd();
+    }
 }

@@ -3,10 +3,10 @@ using Core.Model;
 
 namespace Core.Language;
 
-public class Assign(int row, int column, string variable, IExpression<object> value) : ASTNode(row, column), IInstruction
+public class Assign(int row, int column, string variable, IExpression value) : ASTNode(row, column), IInstruction
 {
     public string Variable { get; } = variable;
-    public IExpression<object> Value { get; } = value;
+    public IExpression Value { get; } = value;
 
     public bool CheckSemantic(Context context) => Value.CheckSemantic(context);
 

@@ -1,11 +1,22 @@
 namespace Core.Model;
 
-public class Context(IContextFunctions functions, IContextActions actions)
+public class Context
 {
+    public Context(IContextFunctions functions, IContextActions actions)
+    {
+        Functions = functions;
+        Actions = actions;
+    }
+
+    public Context()
+    {
+       
+    }
+
     public Dictionary<string, int> Labels { get; set; } = [];
     public Dictionary<string, object> Variables { get; set; } = [];
-    public IContextFunctions Functions { get; set; } = functions;
-    public IContextActions Actions { get; set; } = actions;
+    public IContextFunctions Functions { get; set; }
+    public IContextActions Actions { get; set; }
 
     public bool JumpCond { get; set; }
     public string? JumpTo { get; set; }

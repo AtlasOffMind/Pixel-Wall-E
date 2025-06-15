@@ -107,6 +107,7 @@ namespace Lexer
                     var str = current.ToString();
                     var temp = str + character;
                     var isOp = Dictionary.ContainsKey(str) || IsSeparator(character);
+                    
                     if (reader || Dictionary.ContainsKey(temp) || !isOp && character != ' ')
                     {
                         current.Append(character);

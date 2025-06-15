@@ -4,13 +4,13 @@ using Core.Enum;
 
 namespace Core.Language.Expressions;
 
-public class BinaryBoolean(int row, int column, IExpression<bool> left, IExpression<bool> right, BinaryType type)
+public class BinaryBoolean(int row, int column, IExpression left, IExpression right, BinaryType type)
     : BinaryExpr<bool, bool>(row, column, left, right)
 {
-    public override bool Evaluate(Context context) => type switch
+    public override object Evaluate(Context context) => type switch
     {
-        BinaryType.AND => Left.Evaluate(context) && Right.Evaluate(context),
-        BinaryType.OR => throw new NotImplementedException(),
+        BinaryType.AND => (bool)Left.Evaluate(context) && (bool)Right.Evaluate(context),
+        BinaryType.OR => (bool)Left.Evaluate(context) || (bool)Right.Evaluate(context),
 
         _ => throw new NotImplementedException(),
     };

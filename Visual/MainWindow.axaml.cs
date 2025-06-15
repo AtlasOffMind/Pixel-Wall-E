@@ -2,16 +2,17 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Core.Enum;
 using Core.Model;
 using Lexer;
 using Visual.Scripts;
 using Action = Visual.Scripts.Action;
+using Colors = Avalonia.Media.Colors;
 using Location = Visual.Scripts.Location;
 
 //using MessageBox.Avalonia.Enums;
@@ -82,15 +83,14 @@ public partial class MainWindow : Window, IDrawing
     //TODO aun no se como hacer que pinte
     public void Painting(int directionX, int directionY)
     {
-        if (Exist_walle && PWBrush.Size > 0)
+        if (Exist_walle && PWBrush.Size >= 0)
         {
-            RowMapChildWallE(Wall_E.colPos + directionX, Wall_E.rowPos + directionY);
             RectanglesMap[Wall_E.colPos, Wall_E.rowPos].Fill = new SolidColorBrush(PWBrush.CurrentColor);
-            var size = PWBrush.Size - 1;
+            var size = PWBrush.Size;
 
             if (directionX * directionY == 0)
             {
-                size /= 2;
+                size = (size - 1) / 2;
                 var dirx = (directionX + 1) % 2;
                 var diry = (directionY + 1) % 2;
 
@@ -99,8 +99,8 @@ public partial class MainWindow : Window, IDrawing
             }
             else
             {
-                var dirx = directionX;
-                var diry = directionY;
+                var dirx = -directionX;
+                var diry = -directionY;
 
                 DrawBrushWidth(dirx, 0, size);
                 DrawBrushWidth(0, diry, size);
@@ -122,14 +122,13 @@ public partial class MainWindow : Window, IDrawing
         }
     }
 
-    public void GetSolidColorBrush(int x, int y, out Color? color)
+    public void GetSolidColorBrush(int x, int y, out Color color)
     {
-        color = null;
+        color = Colors.Transparent;
         if (RectanglesMap[x, y].Fill is SolidColorBrush brush)
         {
             color = brush.Color;
         }
-
     }
 
     public Color FromStringToColor(string Color)
@@ -166,11 +165,6 @@ public partial class MainWindow : Window, IDrawing
         Wall_E.walleImage.Height = GetActualSize();
         RoadMap.Children.Add(Wall_E.walleImage);
     }
-
-
-    public int GetDimension() => (int)CanvasResize.Value!;
-    public double GetActualSize() => CellSize * ZoomButton.Value * 0.01;
-
     public Location GetRealPos(int x, int y)
     {
         var actualSize = GetActualSize();
@@ -183,22 +177,38 @@ public partial class MainWindow : Window, IDrawing
         return new Location(wall_E.colPos * (int)actualSize, wall_E.rowPos * (int)actualSize);
     }
 
-    public bool IsValidPos(int x, int y) => (x >= 0 && x < GetDimension() && y >= 0 && y < GetDimension()) ? true : false;
-
-    public void DibujarOctantes(int xc, int yc, int x, int y)
+    public void DrawEasterEgg(int xc, int yc, int x, int y)
     {
-        Painting(xc + x, yc + y);
-        Painting(xc - x, yc + y);
-        Painting(xc + x, yc - y);
-        Painting(xc - x, yc - y);
-        Painting(xc + y, yc + x);
-        Painting(xc - y, yc + x);
-        Painting(xc + y, yc - x);
-        Painting(xc - y, yc - x);
+        int possX = Wall_E.colPos - xc;
+        int possY = Wall_E.rowPos - yc;
+        RowMapChildWallE(xc + possX, yc + possY);
+        DrawTo(xc + x, yc + y);
+        RowMapChildWallE(xc - possX, yc + possY);
+        DrawTo(xc - x, yc + y);
+        RowMapChildWallE(xc + possX, yc - possY);
+        DrawTo(xc + x, yc - y);
+        RowMapChildWallE(xc - possX, yc - possY);
+        DrawTo(xc - x, yc - y);
+        RowMapChildWallE(xc + possY, yc + possX);
+        DrawTo(xc + y, yc + x);
+        RowMapChildWallE(xc - possY, yc + possX);
+        DrawTo(xc - y, yc + x);
+        RowMapChildWallE(xc + possY, yc - possX);
+        DrawTo(xc + y, yc - x);
+        RowMapChildWallE(xc - possY, yc - possX);
+        DrawTo(xc - y, yc - x);
+    }
+
+    public void DrawTo(int x, int y)
+    {
+        int dirY = y - Wall_E.rowPos;
+        int dirX = x - Wall_E.colPos;
+        Painting(dirX, dirY);
     }
 
     public void ClearCanvas()
     {
+
         foreach (var item in RoadMap.Children)
         {
             if (item is not Rectangle rectangle)
@@ -207,6 +217,24 @@ public partial class MainWindow : Window, IDrawing
         }
         RoadMap.Children.Remove(Wall_E.walleImage);
         Exist_walle = false;
+        PWBrush.Size = 1;
+    }
+    public int GetDimension() => (int)CanvasResize.Value!;
+    public double GetActualSize() => CellSize * ZoomButton.Value * 0.01;
+    public bool IsValidPos(int x, int y) => (x >= 0 && x < GetDimension() && y >= 0 && y < GetDimension()) ? true : false;
+
+    public void PaintingBlock(int x, int y)
+    {
+        var radius = PWBrush.Size / 2;
+        for (var i = -radius; i <= PWBrush.Size / 2; i++)
+        {
+            for (var j = -radius; j <= PWBrush.Size / 2; j++)
+            {
+                int newX = x + j;
+                int newY = y + i;
+                RectanglesMap[newX, newY].Fill = Brush;
+            }
+        }
     }
 }
 
@@ -244,7 +272,7 @@ public partial class MainWindow : Window
         var context = new Context(FuncTion, Action);
 
         var code = TextEditor.Text;
-        var lines = code!.Split("\n");
+        var lines = code!.Split("\r\n");
         var tokens = Scanner.Tokenizer(lines);
         var ast = parser.Parse(tokens);
 
@@ -257,13 +285,13 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             ex = ex is TargetInvocationException target ? target.InnerException! : ex;
-
         }
     }
 
     public async void ToSave(object sender, RoutedEventArgs e)
     {
-        var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
+        //var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
+        var dir = await StorageProvider.TryGetFolderFromPathAsync(new Uri(@"C:\My things\Git\2nd Proyect Pixel Wall-E\Visual\Saves"));
         var options = new FilePickerSaveOptions()
         {
             DefaultExtension = ".pw",
@@ -272,23 +300,29 @@ public partial class MainWindow : Window
 
         var text = TextEditor.Text;
         var storages = await StorageProvider.SaveFilePickerAsync(options);
-        var stream = await storages!.OpenWriteAsync();
-        using var writer = new StreamWriter(stream);
-        writer.WriteLine(text);
-
+        if (storages is not null)
+        {
+            var stream = await storages!.OpenWriteAsync();
+            using var writer = new StreamWriter(stream);
+            writer.WriteLine(text);
+        }
     }
     public async void ToLoad(object sender, RoutedEventArgs e)
     {
-        var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
+        //var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
+        var dir = await StorageProvider.TryGetFolderFromPathAsync(new Uri(@"C:\My things\Git\2nd Proyect Pixel Wall-E\Visual\Saves"));
         var options = new FilePickerOpenOptions()
         {
-            FileTypeFilter = [new FilePickerFileType("*.pw")],
-            SuggestedStartLocation = dir
+            FileTypeFilter = [new FilePickerFileType("PW Files") { Patterns = ["*.pw"] }],
+            SuggestedStartLocation = dir,
         };
         var storages = await StorageProvider.OpenFilePickerAsync(options);
         var file = storages.FirstOrDefault();
-        var stream = await file!.OpenReadAsync();
-        using var reader = new StreamReader(stream);
-        TextEditor.Text = reader.ReadToEnd();
+        if (file is not null)
+        {
+            var stream = await file!.OpenReadAsync();
+            using var reader = new StreamReader(stream);
+            TextEditor.Text = reader.ReadToEnd();
+        }
     }
 }

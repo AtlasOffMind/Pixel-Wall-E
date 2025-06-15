@@ -27,7 +27,7 @@ public class FuncTion(IDrawing drawing) : IContextFunctions
         for (int i = x1; i < x2; i++)
             for (int j = y1; j < y2; j++)
             {
-                drawing.GetSolidColorBrush(i, j, out Color? temp);
+                drawing.GetSolidColorBrush(i, j, out Color temp);
                 if (temp == drawing.FromStringToColor(color))
                     count++;
             }
@@ -50,7 +50,7 @@ public class FuncTion(IDrawing drawing) : IContextFunctions
         var x = drawing.Wall_E.colPos + horizontal;
         var y = drawing.Wall_E.rowPos + vertical;
 
-        drawing.GetSolidColorBrush(x, y, out Color? temp);
+        drawing.GetSolidColorBrush(x, y, out Color temp);
         return temp == drawing.FromStringToColor(color) ? 1 : 0;
     }
 

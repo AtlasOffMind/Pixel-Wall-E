@@ -1,0 +1,9 @@
+Spawn(0,0)
+Color( "Red" )
+RePos(7*2,7*2)
+x <- 1
+Loop
+x <- x + 1
+DrawRectangle(1, 1, 0, x, x)
+Goto[Loop](x < 5)
+

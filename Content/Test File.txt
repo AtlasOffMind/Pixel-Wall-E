@@ -1,17 +1,4 @@
-Spawn(0,0)
-Color( "Red" )
-DrawLine(1,1,7)
-
-
-
-
-
-
-
-
 x <-5 + 7 * 3 - 2 - 1
 LOOP
-y <- x >= 6
+y <- -6
 x <- x - 2
-GoTo [LOOP] (y)
-x <- 10

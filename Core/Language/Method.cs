@@ -4,10 +4,10 @@ using Core.Model;
 
 namespace Core.Language;
 
-public abstract class BaseMethod(int row, int column, string name, List<IExpression<object>> @params) : ASTNode(row, column), ISemantic
+public abstract class BaseMethod(int row, int column, string name, List<IExpression> @params) : ASTNode(row, column), ISemantic
 {
     public string Name { get; } = name;
-    public IExpression<object>[] Params { get; } = [.. @params];
+    public IExpression[] Params { get; } = [.. @params];
 
 
     public virtual bool CheckSemantic(Context context)
@@ -19,9 +19,9 @@ public abstract class BaseMethod(int row, int column, string name, List<IExpress
     }
 }
 
-public class Method<T>(int row, int column, string name, List<IExpression<object>> @params) : BaseMethod(row, column, name, @params), IExpression<T>
+public class Method<T>(int row, int column, string name, List<IExpression> @params) : BaseMethod(row, column, name, @params), IExpression
 {
-    public T Evaluate(Context context)
+    public object Evaluate(Context context)
     {
         context.Functions.GetMethodInfo(Name, out var function);
         return (T)function.Function([.. Params.Select(x => x.Evaluate(context))]);
@@ -33,7 +33,7 @@ public class Method<T>(int row, int column, string name, List<IExpression<object
         && methodInfo.ReturnType == typeof(T);
 }
 
-public class Method(int row, int column, string name, List<IExpression<object>> @params) : BaseMethod(row, column, name, @params), IInstruction
+public class Method(int row, int column, string name, List<IExpression> @params) : BaseMethod(row, column, name, @params), IInstruction
 {
     public void SearchLabels(Context context) { }
     public void Evaluate(Context context)

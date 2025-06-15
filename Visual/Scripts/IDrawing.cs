@@ -13,10 +13,11 @@ public interface IDrawing
     PWBrush PWBrush { get; set; }
     Rectangle[,] RectanglesMap { get; set; }
 
-    void GetSolidColorBrush(int x, int y, out Color? color);
+    void GetSolidColorBrush(int x, int y, out Color color);
     void RowMapChildWallE(int x, int y);
     void Painting(int directionX, int directionY);
-    void DibujarOctantes(int xc, int yc, int x, int y);
+    void PaintingBlock(int x, int y);
+    void DrawEasterEgg(int xc, int yc, int x, int y);
     double GetActualSize();
     int GetDimension();
     public bool IsValidPos(int x, int y);
@@ -24,4 +25,5 @@ public interface IDrawing
     Color FromStringToColor(string Color);
     Location GetRealPos(int x, int y);
     Location GetRealPos(Wall_e wall_E);
+
 }

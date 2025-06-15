@@ -4,10 +4,10 @@ using Core.Model;
 
 namespace Core.Language;
 
-public class Goto(int row, int column, string labelName, IExpression<bool> cond) : ASTNode(row, column), IInstruction
+public class Goto(int row, int column, string labelName, IExpression cond) : ASTNode(row, column), IInstruction
 {
     public string LabelName { get; } = labelName;
-    public IExpression<bool> Cond { get; } = cond;
+    public IExpression Cond { get; } = cond;
 
     public bool CheckSemantic(Context context)
     {
@@ -17,7 +17,7 @@ public class Goto(int row, int column, string labelName, IExpression<bool> cond)
 
     public void Evaluate(Context context)
     {
-        context.JumpCond = Cond.Evaluate(context);
+        context.JumpCond = (bool)Cond.Evaluate(context);
         context.JumpTo = LabelName;
     }
 

@@ -33,19 +33,7 @@ public class Action(IDrawing drawing) : IContextActions
         Color actualColorBrush = drawing.PWBrush.CurrentColor;
         drawing.Brush = new SolidColorBrush(drawing.PWBrush.CurrentColor);
 
-        drawing.PWBrush.CurrentColor = color switch
-        {
-            "Red" => Colors.Red,
-            "Blue" => Colors.Blue,
-            "Green" => Colors.Green,
-            "Yellow" => Colors.Yellow,
-            "Orange" => Colors.Orange,
-            "Purple" => Colors.Purple,
-            "Black" => Colors.Black,
-            "White" => Colors.White,
-            "Transparent" => Colors.Transparent,
-            _ => throw new NotImplementedException("that's not a valid color"),
-        };
+        drawing.PWBrush.CurrentColor = drawing.FromStringToColor(color);
 
         if (actualColorBrush != drawing.PWBrush.CurrentColor)
             drawing.Brush = new SolidColorBrush(drawing.PWBrush.CurrentColor);
@@ -65,15 +53,41 @@ public class Action(IDrawing drawing) : IContextActions
         dirY = int.Sign(dirY);
         int size = drawing.PWBrush.Size;
 
-        drawing.RectanglesMap[drawing.Wall_E.colPos, drawing.Wall_E.rowPos].Fill = new SolidColorBrush(drawing.PWBrush.CurrentColor);
-
         for (int i = 0; i < distance; i++)
         {
-            if (distance - i < drawing.PWBrush.Size)
-                drawing.PWBrush.Size = distance - i;
+            if (dirX * dirY != 0 && i < size)
+                drawing.PWBrush.Size = i;
             drawing.Painting(dirX, dirY);
+            drawing.RowMapChildWallE(drawing.Wall_E.colPos + dirX, drawing.Wall_E.rowPos + dirY);
         }
         drawing.PWBrush.Size = size;
+    }
+
+    public void DrawEasterEgg(int dirX, int dirY, int radius)
+    {
+        dirX = int.Sign(dirX);
+        dirY = int.Sign(dirY);
+
+        int p = 1 - radius;
+        int xc = drawing.Wall_E.colPos + dirX * radius;
+        int yc = drawing.Wall_E.rowPos + dirY * radius;
+
+        for (int x = 0, y = radius; x < y; x++)
+        {
+            drawing.RowMapChildWallE(xc + x, yc + y);
+            if (p < 0)
+            {
+                p += 2 * x + 1;
+            }
+            else
+            {
+                y--;
+                p += 2 * (x - y) + 1;
+            }
+
+            drawing.DrawEasterEgg(xc, yc, x, y);
+        }
+        drawing.RowMapChildWallE(xc, yc);
     }
 
     public void DrawCircle(int dirX, int dirY, int radius)
@@ -96,8 +110,14 @@ public class Action(IDrawing drawing) : IContextActions
                 y--;
                 p += 2 * (x - y) + 1;
             }
-
-            drawing.DibujarOctantes(xc, yc, x, y);
+            drawing.PaintingBlock(xc + x, yc + y);
+            drawing.PaintingBlock(xc - x, yc + y);
+            drawing.PaintingBlock(xc + x, yc - y);
+            drawing.PaintingBlock(xc - x, yc - y);
+            drawing.PaintingBlock(xc + y, yc + x);
+            drawing.PaintingBlock(xc - y, yc + x);
+            drawing.PaintingBlock(xc + y, yc - x);
+            drawing.PaintingBlock(xc - y, yc - x);
         }
         drawing.RowMapChildWallE(xc, yc);
     }
@@ -113,14 +133,16 @@ public class Action(IDrawing drawing) : IContextActions
             var midY = drawing.Wall_E.rowPos + dirY * distance;
 
             // Punto A del rectangulo 
-            (int x, int y) = (drawing.Wall_E.colPos - width, drawing.Wall_E.rowPos - height);
-
+            (int x, int y) = (midX - width + 1, midY - height + 1);
+            int corr = (drawing.PWBrush.Size - 1) / 2;
             drawing.RowMapChildWallE(x, y);
             foreach (var item in dir)
             {
+                drawing.RowMapChildWallE(drawing.Wall_E.colPos - item.x * corr, drawing.Wall_E.rowPos - item.y * corr);
                 var length = item.x != 0 ? width : height;
-                length = 2 * length - 1;
+                length = 2 * length - 1 + corr;
                 DrawLine(item.x, item.y, length);
+                drawing.RowMapChildWallE(drawing.Wall_E.colPos - item.x, drawing.Wall_E.rowPos - item.y);
             }
             drawing.RowMapChildWallE(midX, midY);
         }
@@ -128,7 +150,25 @@ public class Action(IDrawing drawing) : IContextActions
 
     public void Fill()
     {
+        var mask = new bool[drawing.RectanglesMap.GetLength(0), drawing.RectanglesMap.GetLength(0)];
+        (int x, int y) = (drawing.Wall_E.colPos, drawing.Wall_E.rowPos);
+        drawing.GetSolidColorBrush(x, y, out Color color);
+        var dirs = new (int, int)[] { (-1, 0), (1, 0), (0, -1), (0, 1) };
+        Fill(mask, x, y, color, dirs);
+    }
 
+    public void Fill(bool[,] mask, int x, int y, Color color, (int, int)[] dirs)
+    {
+        drawing.GetSolidColorBrush(x, y, out Color neighborColor);
+        if (mask[x, y] || !drawing.IsValidPos(x, y) || neighborColor != color)
+            return;
+        mask[x, y] = true;
+        drawing.RectanglesMap[x, y].Fill = drawing.Brush;
+        foreach (var (dx, dy) in dirs)
+        {
+            int newX = x + dx, newY = y + dy;
+            Fill(mask, newX, newY, color, dirs);
+        }
     }
 
     public bool GetMethodInfo(string name, out ActionsMethodInfo? methodInfo)
@@ -143,4 +183,7 @@ public class Action(IDrawing drawing) : IContextActions
         methodInfo = new ActionsMethodInfo(actions, types);
         return false;
     }
+
+    public void RePos(int dirX, int dirY) => drawing.RowMapChildWallE(dirX, dirY);
+
 }

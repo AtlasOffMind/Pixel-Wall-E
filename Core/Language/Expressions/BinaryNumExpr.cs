@@ -4,16 +4,16 @@ using Core.Enum;
 
 namespace Core.Language.Expressions;
 
-public class BinaryNumExpr(int row, int column, IExpression<int> left, IExpression<int> right, BinaryType type) : BinaryExpr<int>(row, column, left, right)
+public class BinaryNumExpr(int row, int column, IExpression left, IExpression right, BinaryType type) : BinaryExpr<int>(row, column, left, right)
 {
-    public override int Evaluate(Context context) => type switch
+    public override object Evaluate(Context context) => type switch
     {
-        BinaryType.SUM => Left.Evaluate(context) + Right.Evaluate(context),
-        BinaryType.MINUS => Left.Evaluate(context) - Right.Evaluate(context),
-        BinaryType.DIVISION => Left.Evaluate(context) / Right.Evaluate(context),
-        BinaryType.MULTIPLICATION => Left.Evaluate(context) * Right.Evaluate(context),
-        BinaryType.MODULE => Left.Evaluate(context) % Right.Evaluate(context),
-        BinaryType.POW => (int)Math.Pow(Left.Evaluate(context), Right.Evaluate(context)),
+        BinaryType.SUM => (int)Left.Evaluate(context) + (int)Right.Evaluate(context),
+        BinaryType.MINUS => (int)Left.Evaluate(context) - (int)Right.Evaluate(context),
+        BinaryType.DIVISION => (int)Left.Evaluate(context) / (int)Right.Evaluate(context),
+        BinaryType.MULTIPLICATION => (int)Left.Evaluate(context) * (int)Right.Evaluate(context),
+        BinaryType.MODULE => (int)Left.Evaluate(context) % (int)Right.Evaluate(context),
+        BinaryType.POW => (int)Math.Pow((int)Left.Evaluate(context), (int)Right.Evaluate(context)),
 
         _ => throw new NotImplementedException(),
 

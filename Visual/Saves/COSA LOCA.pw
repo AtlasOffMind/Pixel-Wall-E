@@ -1,0 +1,15 @@
+Spawn(0,0)
+Size(13)
+Color( "Blue" )
+RePos(8,8)
+DrawCircle(1, 1, 22)
+Color( "Black" )
+Fill()
+
+Size(7)
+Color( "Red" )
+RePos(70,20)
+DrawCircle(1, 1, 10)
+Color( "Blue" )
+Fill()
+

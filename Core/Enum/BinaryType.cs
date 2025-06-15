@@ -3,11 +3,11 @@ namespace Core.Enum;
 public enum BinaryType
 {
     //Aritmetic
-    SUM, 
-    MINUS, 
-    DIVISION, 
-    MULTIPLICATION, 
-    POW, 
+    SUM,
+    MINUS,
+    DIVISION,
+    MULTIPLICATION,
+    POW,
     MODULE,
 
 
@@ -20,4 +20,10 @@ public enum BinaryType
     DIFERENT,
     AND,
     OR,
+}
+
+public enum UnaryType
+{
+    Negativo,
+    Negacion
 }

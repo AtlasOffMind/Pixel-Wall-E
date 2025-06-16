@@ -74,13 +74,6 @@ public class Parser()
     private bool TryExpression(List<Token> tokens, out IExpression? expression, TokenType? endType = null)
     {
         var startIndex = index;
-        if (BooleanExpression(tokens, out expression) && (endType == null || MatchForType(tokens, endType.Value)))
-        {
-            return true;
-        }
-
-        index = startIndex;
-
         if (NumericExpression(tokens, out expression) && (endType == null || MatchForType(tokens, endType.Value)))
         {
             return true;

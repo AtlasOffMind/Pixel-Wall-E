@@ -27,6 +27,7 @@ public partial class MainWindow : Window, IDrawing
     public Action Action { get; set; }
     public FuncTion FuncTion { get; set; }
 
+
     public MainWindow()
     {
         InitializeComponent();
@@ -46,7 +47,6 @@ public partial class MainWindow : Window, IDrawing
         FuncTion = new FuncTion(this);
 
     }
-
     private void DrawingRoadMap()
     {
         var actualSize = CellSize * ZoomButton.Value * 0.01;
@@ -59,7 +59,6 @@ public partial class MainWindow : Window, IDrawing
             for (int j = 0; j < dimesion; j++)
                 DrawingRectangle(i, j, actualSize);
     }
-
     private void DrawingRectangle(int i, int j, double actualSize)
     {
         var cell = new Rectangle()
@@ -76,7 +75,6 @@ public partial class MainWindow : Window, IDrawing
         RoadMap.Children.Add(cell);
         RectanglesMap[i, j] = cell;
     }
-
     public void Painting(int directionX, int directionY)
     {
         if (Exist_walle && PWBrush.Size >= 0)
@@ -107,7 +105,6 @@ public partial class MainWindow : Window, IDrawing
             throw new InvalidOperationException("There is no Wall-E in the current context");
         }
     }
-
     public void DrawBrushWidth(int dirx, int diry, int distance)
     {
         (int x, int y) = (Wall_E.colPos, Wall_E.rowPos);
@@ -117,7 +114,6 @@ public partial class MainWindow : Window, IDrawing
             RectanglesMap[newX, newY].Fill = new SolidColorBrush(PWBrush.CurrentColor);
         }
     }
-
     public void GetSolidColorBrush(int x, int y, out Color color)
     {
         color = Colors.Transparent;
@@ -126,9 +122,9 @@ public partial class MainWindow : Window, IDrawing
             color = brush.Color;
         }
     }
-
     public Color FromStringToColor(string Color)
     {
+        if (Color[0] == '\"') Color = Color.Substring(1, Color.Length - 2);
         Color CurrentColor = Color switch
         {
             "Red" => Colors.Red,
@@ -145,7 +141,6 @@ public partial class MainWindow : Window, IDrawing
 
         return CurrentColor;
     }
-
     public void RowMapChildWallE(int x, int y)
     {
         var location = GetRealPos(x, y);
@@ -166,13 +161,11 @@ public partial class MainWindow : Window, IDrawing
         var actualSize = GetActualSize();
         return new Location(x * actualSize, y * actualSize);
     }
-
     public Location GetRealPos(Wall_e wall_E)
     {
         var actualSize = GetActualSize();
         return new Location(wall_E.colPos * (int)actualSize, wall_E.rowPos * (int)actualSize);
     }
-
     public void DrawEasterEgg(int xc, int yc, int x, int y)
     {
         int possX = Wall_E.colPos - xc;
@@ -194,25 +187,25 @@ public partial class MainWindow : Window, IDrawing
         RowMapChildWallE(xc - possY, yc - possX);
         DrawTo(xc - y, yc - x);
     }
-
     public void DrawTo(int x, int y)
     {
         int dirY = y - Wall_E.rowPos;
         int dirX = x - Wall_E.colPos;
         Painting(dirX, dirY);
     }
-
     public void ClearCanvas()
     {
         foreach (var item in RoadMap.Children)
         {
             if (item is not Rectangle rectangle)
                 continue;
-            rectangle.Fill = Brushes.White;
+            rectangle.Fill = new SolidColorBrush(Colors.White);
         }
         RoadMap.Children.Remove(Wall_E.walleImage);
         Exist_walle = false;
         PWBrush.Size = 1;
+        PWBrush.CurrentColor = Colors.White;
+
     }
     public void PaintingBlock(int x, int y)
     {
@@ -240,12 +233,10 @@ public partial class MainWindow : Window
         RoadMap.Children.Clear();
         DrawingRoadMap();
     }
-
     public void SplitErrors_Click(object sender, RoutedEventArgs e)
     {
         ErrorsView.Height = (ErrorsView.Height + 100) % 200;
     }
-
     public void ZoomSlideOnChange(object sender, RoutedEventArgs e)
     {
         var actualSize = CellSize * ZoomButton.Value * 0.01;
@@ -263,7 +254,6 @@ public partial class MainWindow : Window
             Canvas.SetTop(item, actualSize * row);
         }
     }
-
     public void TextEditor_TextChanged(object sender, RoutedEventArgs e)
     {
         var parser = new Parser.Parser();
@@ -278,7 +268,6 @@ public partial class MainWindow : Window
 
 
     }
-
     public void Execute_Click(object sender, RoutedEventArgs e)
     {
         ClearCanvas();
@@ -292,12 +281,12 @@ public partial class MainWindow : Window
         var ast = parser.Parse(tokens);
 
         ast.SearchLabels(context);
-        
-        #if DEBUG
+
+#if DEBUG
         // IEnumerable<PixelWallyErrors> errors = Scanner.exceptions;
         // errors = errors.Concat(parser.exceptions).Concat(ast.CheckSemantic(context));
         // ErrorsView.Content = string.Join("\n", errors);
-        #endif
+#endif
 
         try
         {
@@ -308,7 +297,6 @@ public partial class MainWindow : Window
             ex = ex is TargetInvocationException target ? target.InnerException! : ex;
         }
     }
-
     public async void ToSave(object sender, RoutedEventArgs e)
     {
         //var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);

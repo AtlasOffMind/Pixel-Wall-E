@@ -1,14 +1,9 @@
-Spawn(7*2,7*2)
-Color("Red")
-x <- 5
-DrawRectangle(1, 1, 0, x, x)
-Color("Blue")
-Fill()
-RePos( GetActualX() , 0 )
+Spawn(14,14)
 
-y<- GetActualX()
+e<- IsCanvasColor("White", 0,0)
+RePos(GetActualX(),GetActualY() + e)
 
-e<- GetColorCount("Blue", y-4, y-4, y+4,  y+4)
-RePos(GetActualX(),e)
+
+
 
 

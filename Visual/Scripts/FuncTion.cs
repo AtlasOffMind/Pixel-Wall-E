@@ -24,17 +24,19 @@ public class FuncTion(IDrawing drawing) : IContextFunctions
     }
     public int GetColorCount(string color, int x1, int y1, int x2, int y2)
     {
+        Color tempColor;
+        Color compareColor = drawing.FromStringToColor(color);
+
         int count = 0;
         for (int i = x1; i < x2; i++)
             for (int j = y1; j < y2; j++)
             {
-                drawing.GetSolidColorBrush(i, j, out Color temp);
-                if (temp == drawing.FromStringToColor(color))
+                drawing.GetSolidColorBrush(i, j, out tempColor);
+                if (tempColor == compareColor)
                     count++;
             }
         return count;
     }
-
     //Retorna 1 si el color de la brocha actual es string color, 0 en caso contrario.
     public int IsBrushColor(string color)
     {

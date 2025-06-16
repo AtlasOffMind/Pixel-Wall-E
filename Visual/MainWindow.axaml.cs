@@ -299,8 +299,8 @@ public partial class MainWindow : Window
     }
     public async void ToSave(object sender, RoutedEventArgs e)
     {
-        //var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
-        var dir = await StorageProvider.TryGetFolderFromPathAsync(new Uri(@"C:\My things\Git\2nd Proyect Pixel Wall-E\Visual\Saves"));
+        var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
+       
         var options = new FilePickerSaveOptions()
         {
             DefaultExtension = ".pw",
@@ -318,8 +318,8 @@ public partial class MainWindow : Window
     }
     public async void ToLoad(object sender, RoutedEventArgs e)
     {
-        //var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
-        var dir = await StorageProvider.TryGetFolderFromPathAsync(new Uri(@"C:\My things\Git\2nd Proyect Pixel Wall-E\Visual\Saves"));
+        var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
+       
         var options = new FilePickerOpenOptions()
         {
             FileTypeFilter = [new FilePickerFileType("PW Files") { Patterns = ["*.pw"] }],

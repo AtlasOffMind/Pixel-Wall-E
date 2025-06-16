@@ -31,7 +31,7 @@ public class Parser()
                 if (TryIDENTIFIER(tokens, out value))
                     instructions.Add(value!);
                 else
-                    exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), "Assign, Parenthesis or Backslash expected"));
+                    exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index-1]), "Assign, Parenthesis or Backslash expected"));
             }
             else
                 JumpingInstruct(tokens);

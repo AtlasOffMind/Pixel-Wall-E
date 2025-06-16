@@ -270,34 +270,36 @@ public partial class MainWindow : Window
     public void Execute_Click(object sender, RoutedEventArgs e)
     {
         ClearCanvas();
-
-        var parser = new Parser.Parser();
-        var context = new Context(FuncTion, Action);
-
         var code = TextEditor.Text;
-        var lines = code!.Split("\r\n");
-        var tokens = Scanner.Tokenizer(lines);
-        var ast = parser.Parse(tokens);
-
-        ast.SearchLabels(context);
-
-        // IEnumerable<PixelWallyErrors> errors = Scanner.exceptions;
-        // errors = errors.Concat(parser.exceptions).Concat(ast.CheckSemantic(context));
-        // ErrorsView.Content = string.Join("\n", errors);
-        
-        try
+        if (!string.IsNullOrEmpty(code))
         {
-            ast.Evaluate(context);
-        }
-        catch (Exception ex)
-        {
-            ex = ex is TargetInvocationException target ? target.InnerException! : ex;
+
+            var parser = new Parser.Parser();
+            var context = new Context(FuncTion, Action);
+
+            var lines = code!.Split("\r\n");
+            var tokens = Scanner.Tokenizer(lines);
+            var ast = parser.Parse(tokens);
+
+            ast.SearchLabels(context);
+
+            IEnumerable<PixelWallyErrors> errors = Scanner.exceptions;
+            errors = errors.Concat(parser.exceptions).Concat(ast.CheckSemantic(context));
+            ErrorsView.Content = string.Join("\n", errors);
+
+            try
+            {
+                ast.Evaluate(context);
+            }
+            catch (Exception ex)
+            {
+                ex = ex is TargetInvocationException target ? target.InnerException! : ex;
+            }
         }
     }
     public async void ToSave(object sender, RoutedEventArgs e)
     {
         var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
-        
 
         var options = new FilePickerSaveOptions()
         {
@@ -317,7 +319,6 @@ public partial class MainWindow : Window
     public async void ToLoad(object sender, RoutedEventArgs e)
     {
         var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
-        
 
         var options = new FilePickerOpenOptions()
         {

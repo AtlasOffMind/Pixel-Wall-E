@@ -1,6 +1,5 @@
 using Core.Enum;
-using Core.Interface;
-using Core.Model;
+
 
 namespace Core.Extension;
 
@@ -28,25 +27,6 @@ public static class Extensions
     public static UnaryType ToUnary(this TokenType type) => type switch
     {
         TokenType.MINUS => UnaryType.Negativo,
-        // TokenType. => UnaryType.Negacion,
         _ => throw new NotImplementedException()
     };
-
-    // public static IExpression ToObjectExpression<T>(this IExpression expression)
-    //     => new ObjectExpression<T>(expression);
 }
-
-// public class ObjectExpression<T>(IExpression expression) : IExpression
-// {
-//     public IExpression Expression { get; } = expression;
-
-//     public bool CheckSemantic(Context context)
-//     {
-//         return Expression.CheckSemantic(context);
-//     }
-
-//     public objecobject Evaluate(Context context)
-//     {
-//         return Expression.Evaluate(context)!;
-//     }
-// }

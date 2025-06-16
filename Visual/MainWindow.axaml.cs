@@ -7,7 +7,6 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
-using Core.Enum;
 using Core.Model;
 using Lexer;
 using Visual.Scripts;
@@ -15,8 +14,6 @@ using Action = Visual.Scripts.Action;
 using Colors = Avalonia.Media.Colors;
 using Location = Visual.Scripts.Location;
 
-//using MessageBox.Avalonia.Enums;
-//using MessageBox.Avalonia;
 
 namespace MyApp;
 public partial class MainWindow : Window, IDrawing
@@ -27,7 +24,6 @@ public partial class MainWindow : Window, IDrawing
     public Rectangle[,] RectanglesMap { get; set; }
     public PWBrush PWBrush { get; set; }
     public IBrush Brush { get; set; }
-
     public Action Action { get; set; }
     public FuncTion FuncTion { get; set; }
 
@@ -48,6 +44,7 @@ public partial class MainWindow : Window, IDrawing
         PWBrush = new PWBrush(Colors.White, 1);
         Action = new Action(this);
         FuncTion = new FuncTion(this);
+
     }
 
     private void DrawingRoadMap()
@@ -80,7 +77,6 @@ public partial class MainWindow : Window, IDrawing
         RectanglesMap[i, j] = cell;
     }
 
-    //TODO aun no se como hacer que pinte
     public void Painting(int directionX, int directionY)
     {
         if (Exist_walle && PWBrush.Size >= 0)
@@ -108,7 +104,7 @@ public partial class MainWindow : Window, IDrawing
         }
         else if (!Exist_walle)
         {
-            throw new NotImplementedException("There is no Wall-E in the current context");
+            throw new InvalidOperationException("There is no Wall-E in the current context");
         }
     }
 
@@ -144,7 +140,7 @@ public partial class MainWindow : Window, IDrawing
             "Black" => Colors.Black,
             "White" => Colors.White,
             "Transparent" => Colors.Transparent,
-            _ => throw new NotImplementedException("that's not a valid color"),
+            _ => throw new InvalidOperationException("that's not a valid color"),
         };
 
         return CurrentColor;
@@ -208,7 +204,6 @@ public partial class MainWindow : Window, IDrawing
 
     public void ClearCanvas()
     {
-
         foreach (var item in RoadMap.Children)
         {
             if (item is not Rectangle rectangle)
@@ -219,10 +214,6 @@ public partial class MainWindow : Window, IDrawing
         Exist_walle = false;
         PWBrush.Size = 1;
     }
-    public int GetDimension() => (int)CanvasResize.Value!;
-    public double GetActualSize() => CellSize * ZoomButton.Value * 0.01;
-    public bool IsValidPos(int x, int y) => (x >= 0 && x < GetDimension() && y >= 0 && y < GetDimension()) ? true : false;
-
     public void PaintingBlock(int x, int y)
     {
         var radius = PWBrush.Size / 2;
@@ -236,6 +227,10 @@ public partial class MainWindow : Window, IDrawing
             }
         }
     }
+    public int GetDimension() => (int)CanvasResize.Value!;
+    public double GetActualSize() => CellSize * ZoomButton.Value * 0.01;
+    public bool IsValidPos(int x, int y) => (x >= 0 && x < GetDimension() && y >= 0 && y < GetDimension()) ? true : false;
+
 }
 
 public partial class MainWindow : Window
@@ -244,6 +239,11 @@ public partial class MainWindow : Window
     {
         RoadMap.Children.Clear();
         DrawingRoadMap();
+    }
+
+    public void SplitErrors_Click(object sender, RoutedEventArgs e)
+    {
+        ErrorsView.Height = (ErrorsView.Height + 100) % 200;
     }
 
     public void ZoomSlideOnChange(object sender, RoutedEventArgs e)
@@ -264,6 +264,21 @@ public partial class MainWindow : Window
         }
     }
 
+    public void TextEditor_TextChanged(object sender, RoutedEventArgs e)
+    {
+        var parser = new Parser.Parser();
+        var context = new Context(FuncTion, Action);
+
+        var code = TextEditor.Text;
+        var lines = code!.Split("\r\n");
+        var tokens = Scanner.Tokenizer(lines);
+        var ast = parser.Parse(tokens);
+
+        ast.SearchLabels(context);
+
+
+    }
+
     public void Execute_Click(object sender, RoutedEventArgs e)
     {
         ClearCanvas();
@@ -277,7 +292,13 @@ public partial class MainWindow : Window
         var ast = parser.Parse(tokens);
 
         ast.SearchLabels(context);
-        ast.CheckSemantic(context);
+        
+        #if DEBUG
+        // IEnumerable<PixelWallyErrors> errors = Scanner.exceptions;
+        // errors = errors.Concat(parser.exceptions).Concat(ast.CheckSemantic(context));
+        // ErrorsView.Content = string.Join("\n", errors);
+        #endif
+
         try
         {
             ast.Evaluate(context);

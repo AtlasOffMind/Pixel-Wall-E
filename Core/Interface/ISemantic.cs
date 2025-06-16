@@ -10,6 +10,6 @@ public interface ISemantic
     /// </summary>
     /// <param name="context">Contexto en el que se ejecuta el nodo</param>
     /// <returns>Devuelve si está correcto el nodo asociado</returns>
-    bool CheckSemantic(Context context);
+    IEnumerable<SemanticError> CheckSemantic(Context context);
 }
 

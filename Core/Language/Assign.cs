@@ -1,3 +1,4 @@
+using Core.Error;
 using Core.Interface;
 using Core.Model;
 
@@ -8,9 +9,11 @@ public class Assign(int row, int column, string variable, IExpression value) : A
     public string Variable { get; } = variable;
     public IExpression Value { get; } = value;
 
-    public bool CheckSemantic(Context context) => Value.CheckSemantic(context);
+    public IEnumerable<SemanticError> CheckSemantic(Context context) => Value.CheckSemantic(context);
 
     public void Evaluate(Context context) => context.Variables[Variable] = Value.Evaluate(context)!;
 
     public void SearchLabels(Context context) { }
+
+    
 }

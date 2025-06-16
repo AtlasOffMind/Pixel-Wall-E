@@ -1,3 +1,4 @@
+using Core.Error;
 using Core.Interface;
 using Core.Model;
 
@@ -7,7 +8,7 @@ public class Literal<T>(int row, int column, T value) : ASTNode(row, column), IE
 {
     public T Value { get; set; } = value;
 
-    public bool CheckSemantic(Context context) => true;
+    public IEnumerable<SemanticError> CheckSemantic(Context context) => [];
 
     public object Evaluate(Context context) => Value!;
 }

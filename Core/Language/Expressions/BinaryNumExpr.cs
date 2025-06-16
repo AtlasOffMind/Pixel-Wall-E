@@ -15,7 +15,7 @@ public class BinaryNumExpr(int row, int column, IExpression left, IExpression ri
         BinaryType.MODULE => (int)Left.Evaluate(context) % (int)Right.Evaluate(context),
         BinaryType.POW => (int)Math.Pow((int)Left.Evaluate(context), (int)Right.Evaluate(context)),
 
-        _ => throw new NotImplementedException(),
+        _ => throw new InvalidOperationException(),
 
     };
 }

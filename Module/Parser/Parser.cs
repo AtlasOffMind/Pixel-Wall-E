@@ -8,11 +8,10 @@ using Core.Error;
 
 namespace Parser;
 
-//TODO esto ya esta implementado ahora lo que queda por hacer es organizarlo y ahorrarme codigo
 public class Parser()
 {
     public int index;
-    private List<GramaticError> exceptions = [];
+    public List<GramaticError> exceptions = [];
 
     public IInstruction Parse(List<Token> tokens)
     {
@@ -36,7 +35,6 @@ public class Parser()
             }
             else
                 JumpingInstruct(tokens);
-            //TODO implementar errores en cada Try y si no se encuentran ahi se lo envio desde el jumping
         }
 
         InstructionBlock block = new(instructions);
@@ -80,7 +78,6 @@ public class Parser()
         {
             return true;
         }
-        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
 
         index = startIndex;
 
@@ -88,7 +85,6 @@ public class Parser()
         {
             return true;
         }
-        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
 
         index = startIndex;
 
@@ -96,8 +92,6 @@ public class Parser()
         {
             return true;
         }
-        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
-
 
         expression = null;
         index = startIndex;
@@ -110,27 +104,56 @@ public class Parser()
         return true;
     }
 
-    private bool TryMethod(List<Token> tokens, Token token, out IInstruction? value)
+    private bool CheckMethod(List<Token> tokens, Token token, out List<IExpression>? list)
     {
-        List<IExpression> list = [];
-
-        if (tokens[index].type != TokenType.CLOUSE_PAREN && TryExpression(tokens, out IExpression? param))
-            list.Add(param!);
+        list = [];
+        IExpression? param;
+        if (tokens[index].type != TokenType.CLOUSE_PAREN)
+        {
+            if (TryExpression(tokens, out param))
+                list.Add(param!);
+            else
+                return false;
+        }
 
         while (!MatchForType(tokens, TokenType.CLOUSE_PAREN))
         {
-            if (MatchForType(tokens, TokenType.COMMA) && TryExpression(tokens, out param))
-                list.Add(param!);
+            if (!MatchForType(tokens, TokenType.COMMA))
+            {
+                exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), "Comma expected"));
+                return false;
+            }
+            else if (!TryExpression(tokens, out param))
+                return false;
+            list.Add(param!);
         }
 
-        if (!MatchForType(tokens, TokenType.BACKSLASH))
+        return true;
+    }
+
+    private bool TryMethod(List<Token> tokens, Token token, out IInstruction? value)
+    {
+        if (!CheckMethod(tokens, token, out List<IExpression>? list) | !MatchForType(tokens, TokenType.BACKSLASH))
         {
             value = null;
             return false;
         }
-        value = new Method(token.row, token.column, token.name, list);
+        value = new Method(token.row, token.column, token.name, list!);
         return true;
     }
+
+
+    private bool TryMethod<T>(List<Token> tokens, Token token, out IExpression? value)
+    {
+        if (!MatchForType(tokens, TokenType.OPEN_PAREN) || !CheckMethod(tokens, token, out List<IExpression>? list))
+        {
+            value = null;
+            return false;
+        }
+        value = new Method<T>(token.row, token.column, token.name, list!);
+        return true;
+    }
+
 
     private bool TryGOTO(List<Token> tokens, out IInstruction? value)
     {
@@ -363,7 +386,6 @@ public class Parser()
 
     private bool FirstMatch(List<Token> tokens, List<TokenType> tokensTypes, out TokenType? type)
     {
-        //TODO ponerle el Hashtable a este for 
         foreach (var i in tokensTypes)
         {
             if (MatchForType(tokens, i))
@@ -439,7 +461,8 @@ public class Parser()
         }
         if (MatchForType(tokens, TokenType.IDENTIFIER))
         {
-            expression = new Variable(token.row, token.column, token.name);
+            if (!TryMethod<T>(tokens, token, out expression))
+                expression = new Variable(token.row, token.column, token.name);
             return true;
         }
         expression = null;

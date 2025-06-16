@@ -96,7 +96,9 @@ namespace Lexer
                 for (int j = 0; j < line[i].Length; j++)
                 {
                     var character = line[i][j];
-                    if (character == '\"')
+                    if (character == '\"' && current.Length == 0)
+                        reader = !reader;
+                    else if (character == '\"' && reader)
                         reader = !reader;
                     if (j + 1 < line[i].Length && Match(current + line[i][j + 1].ToString()))
                     {
@@ -107,7 +109,7 @@ namespace Lexer
                     var str = current.ToString();
                     var temp = str + character;
                     var isOp = Dictionary.ContainsKey(str) || IsSeparator(character);
-                    
+
                     if (reader || Dictionary.ContainsKey(temp) || !isOp && character != ' ')
                     {
                         current.Append(character);
@@ -147,6 +149,7 @@ namespace Lexer
                 '(' => true,
                 '[' => true,
                 ']' => true,
+                // '"' => true,
                 _ => false,
             };
         }

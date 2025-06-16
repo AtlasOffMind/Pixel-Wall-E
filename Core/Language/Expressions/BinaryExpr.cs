@@ -1,3 +1,4 @@
+using Core.Error;
 using Core.Interface;
 using Core.Model;
 
@@ -9,8 +10,8 @@ public abstract class BinaryExpr<T, K>(int row, int column, IExpression left, IE
     public IExpression Left { get; } = left;
     public IExpression Right { get; } = right;
     public abstract object Evaluate(Context context);
-    public bool CheckSemantic(Context context)
-        => Left.CheckSemantic(context) && Right.CheckSemantic(context);
+    public IEnumerable<SemanticError> CheckSemantic(Context context)
+        => Left.CheckSemantic(context).Concat(Right.CheckSemantic(context));
 }
 
 public abstract class BinaryExpr<T>(int row, int column, IExpression left, IExpression right) : BinaryExpr<T, T>(row, column, left, right);

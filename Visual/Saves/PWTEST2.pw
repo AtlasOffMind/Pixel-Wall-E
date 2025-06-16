@@ -1,8 +1,14 @@
-Spawn(7*2 - 3,7*2 - 3)
-Color( "Blue" )
-Size(1)
-DrawCircle(1, 1, 3)
-Color( "Red" )
+Spawn(7*2,7*2)
+Color("Red")
+x <- 5
+DrawRectangle(1, 1, 0, x, x)
+Color("Blue")
 Fill()
+RePos( GetActualX() , 0 )
+
+y<- GetActualX()
+
+e<- GetColorCount("Blue", y-4, y-4, y+4,  y+4)
+RePos(GetActualX(),e)
 
 

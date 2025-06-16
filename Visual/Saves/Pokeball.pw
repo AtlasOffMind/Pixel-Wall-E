@@ -1,15 +1,15 @@
-Spawn(2,2)
-Color("Black")
-DrawCircle(1,1,12)
-RePos(14,2)
-DrawLine(0,1,24)
-RePos(14,12)
-DrawCircle(0,1,2)
-Color("White")
-Size(3)
-a<-GetActualX()+4
-b<-GetActualY()+6
-SetPixelColor(a,b)
-RePos(10,12)
-Color("Red")
+Spawn(15,15)
+
+Color( "Black" )
+DrawCircle(1,1,10)
+DrawCircle(0,0,2)
+
+RePos(15,25)
+DrawLine(1,0,8)
+
+RePos(27,25)
+DrawLine(1,0,8)
+
+RePos(27,24)
+Color( "Red" )
 Fill()

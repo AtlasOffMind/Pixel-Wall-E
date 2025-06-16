@@ -1,3 +1,4 @@
+using Core.Error;
 using Core.Interface;
 using Core.Model;
 
@@ -7,8 +8,11 @@ public class Variable(int row, int column, string name) : ASTNode(row, column), 
 {
     public string Name { get; } = name;
 
-    public bool CheckSemantic(Context context)
-        => context.Variables.TryGetValue(Name, out object? _);
+    public IEnumerable<SemanticError> CheckSemantic(Context context)
+    {
+        if (context.Variables.TryGetValue(Name, out object? _))
+            yield return new SemanticError(Location, "");
+    }
 
     public object Evaluate(Context context) => context.Variables[Name];
 }

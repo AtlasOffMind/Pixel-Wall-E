@@ -1,0 +1,30 @@
+Spawn(15,25)
+
+Color( "Black" )
+DrawLine(1,0,20)
+DrawCircle(-1,0,10)
+DrawLine(0,-1,1)
+
+Color( "Red" )
+Fill()
+Color( "White" )
+DrawLine(0,1,1)
+
+Color( "Black" )
+DrawCircle(0,0,2)
+
+Color( "White" )
+DrawLine(1,0,2)
+
+Color( "Black" )
+DrawLine(-1,0,1)
+
+Color( "White" )
+DrawLine(-1,0,3)
+
+Color( "Black" )
+DrawLine(1,0,1)
+
+Color( "White" )
+DrawLine(1,0,1)
+

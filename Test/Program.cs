@@ -10,8 +10,8 @@ public class Program
     {
         var fileName = "Test File.txt";
         var parser = new Parser.Parser();
-      
-        var context = new Context();
+
+        // var context = new Context();
 
         var text = TextReader.TextRead(fileName);
 
@@ -22,9 +22,8 @@ public class Program
 
         var ast = parser.Parse(arr);
 
-        // TODO por cada nodo revisar su checkeo, ver semanticamente cada nodo cuando da error
-        ast.SearchLabels(context);
-        ast.CheckSemantic(context);
-        ast.Evaluate(context);
+        // ast.SearchLabels(context);
+        // ast.CheckSemantic(context);
+        // ast.Evaluate(context);
     }
 }

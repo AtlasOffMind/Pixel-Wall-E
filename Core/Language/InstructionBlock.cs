@@ -1,3 +1,4 @@
+using Core.Error;
 using Core.Interface;
 using Core.Model;
 namespace Core.Language;
@@ -6,14 +7,15 @@ public class InstructionBlock(List<IInstruction> instructions) : IInstruction
 {
     public List<IInstruction> Instructions { get; } = instructions;
 
-    public bool CheckSemantic(Context context)
+    public IEnumerable<SemanticError> CheckSemantic(Context context)
     {
-        bool result = true;
         for (var i = 0; i < Instructions.Count; i++)
         {
-            result &= Instructions[i].CheckSemantic(context);
+            foreach (var item in Instructions[i].CheckSemantic(context))
+            {
+                yield return item;
+            }
         }
-        return result;
     }
 
     public void Evaluate(Context context)

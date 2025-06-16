@@ -1,6 +1,7 @@
 using Core.Language.Expressions;
 using Core.Interface;
 using Core.Model;
+using Core.Error;
 
 namespace Core.Language;
 
@@ -9,10 +10,12 @@ public class Goto(int row, int column, string labelName, IExpression cond) : AST
     public string LabelName { get; } = labelName;
     public IExpression Cond { get; } = cond;
 
-    public bool CheckSemantic(Context context)
+    public IEnumerable<SemanticError> CheckSemantic(Context context)
     {
-        return context.Labels.ContainsKey(LabelName)
-            && Cond.CheckSemantic(context);
+        if (!context.Labels.ContainsKey(LabelName))
+            yield return new SemanticError(Location, "");
+        foreach (var item in Cond.CheckSemantic(context))
+            yield return item;
     }
 
     public void Evaluate(Context context)

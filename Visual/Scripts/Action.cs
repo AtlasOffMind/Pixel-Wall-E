@@ -1,8 +1,8 @@
 using System;
 using Avalonia.Media;
-using Avalonia.Controls;
 using Core.Model;
 using System.Linq;
+using Core.Interface;
 
 namespace Visual.Scripts;
 public class Action(IDrawing drawing) : IContextActions
@@ -18,12 +18,12 @@ public class Action(IDrawing drawing) : IContextActions
             }
             else
             {
-                throw new NotImplementedException("Invalid position");
+                throw new InvalidOperationException("Invalid position");
             }
         }
         else
         {
-            throw new NotImplementedException("This method can only be used 1 time");
+            throw new InvalidOperationException("This method can only be used 1 time");
         }
     }
 
@@ -44,7 +44,7 @@ public class Action(IDrawing drawing) : IContextActions
         if (k > 0)
             drawing.PWBrush.Size = k - (k + 1) % 2;
 
-        else throw new NotImplementedException("The brush size must be a number higher than 0");
+        else throw new InvalidOperationException("The brush size must be a number higher than 0");
     }
 
     public void DrawLine(int dirX, int dirY, int distance)

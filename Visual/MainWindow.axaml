@@ -10,12 +10,13 @@
     mc:Ignorable="d"
     Background="White">
 
-    <Grid ColumnDefinitions="2*,*" RowDefinitions="auto,*" Background="White" Margin="5">
+    <Grid ColumnDefinitions="2*,*" RowDefinitions="auto,*,auto" Background="White" Margin="5">
+        
         <!-- controlador del Panel desplegable del editor -->
         <StackPanel Orientation="Horizontal" Margin="0,0,5,0" Background="Gray" Grid.Column="1">
             <Button Foreground="Black" Margin="5" Content="h" Background="Silver" Width="30" Height="30"/>
             <Label x:Name="FileName" Content="File" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <Button Foreground="Black" Margin="5" Content="E" Background="Blue" Width="30" Height="30" 
+            <Button Foreground="Black" Margin="5" Content="Execute" Background="SteelBlue"  Height="30" 
                 Click="Execute_Click"
                 VerticalAlignment="Center" HorizontalAlignment="Right"/>
         </StackPanel>
@@ -24,23 +25,44 @@
         <ScrollViewer Margin="0,0,5,0" Grid.Column="1" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <Grid ColumnDefinitions="Auto,*" Background="Black">
                 <Label HorizontalContentAlignment="Right" Width="35" Background="Silver" Content="1" />
-                <TextBox x:Name="TextEditor" Grid.Column="1" BorderThickness="0" Background="LightGray" Foreground="Black" Watermark="Spawn(int x, int y )" AcceptsReturn="True" AcceptsTab="True" />
+                <TextBox x:Name="TextEditor" Grid.Column="1" BorderThickness="0" 
+                    Background="LightGray" Foreground="Black" Watermark="Spawn(int x, int y )" 
+                    AcceptsReturn="True" AcceptsTab="True" 
+                    TextChanged="TextEditor_TextChanged"/>
             </Grid>
         </ScrollViewer>
 
         <!-- controlador del Panel desplegable de las herramientas -->
         <StackPanel x:Name="Tools" Orientation="Horizontal" Margin="0,0,1,0" Background="Gray" >
-            <Button x:Name="ImageContent" Margin="5" Background="Silver" >
-                <Image Source="C:\My things\Git\2nd Proyect Pixel Wall-E\Visual\Assets\Icons\—Pngtree—down arrow head pink dark_7263604.png" Width="18" Height="18"/>
-            </Button>
             <NumericUpDown x:Name="CanvasResize" Watermark="Resize"  Minimum="8" Maximum="256" Value="30" Increment="1" Foreground="Black" Margin="5" Background="Silver" Height="30" Width="120" ValueChanged="ResizeButtonOnClick"/>
-            <Button Foreground="Black" Margin="5" Content="Save"   Background="Blue"   Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Click = "ToSave"/>
-            <Button Foreground="Black" Margin="5" Content="Load"   Background="Blue"   Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Click = "ToLoad"/>
+            <Button Foreground="Black" Margin="5" Content="Save"   Background="SteelBlue"   Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Click = "ToSave"/>
+            <Button Foreground="Black" Margin="5" Content="Load"   Background="SteelBlue"   Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Click = "ToLoad"/>
             <Slider x:Name="ZoomButton" Width="120" Value="100" Maximum="150" Minimum="50" SmallChange="10" TickFrequency="10" ValueChanged="ZoomSlideOnChange"/>
         </StackPanel>
+
+        <Grid Grid.Column="1" Grid.Row="3"
+            ColumnDefinitions="auto,*"
+            RowDefinitions="auto,auto"
+            Background="Silver">
+
+            <Button Content="Errors" Cursor="Hand" Background="Silver" BorderBrush="DarkGray"
+                Click="SplitErrors_Click"/>
+
+            <ScrollViewer x:Name="ErrorsView" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                Background="LightGray" BorderBrush="DarkGray" 
+                BorderThickness="1" Padding="8" CornerRadius="4"
+                Height="0" Grid.Row="2" Grid.ColumnSpan="2">
+                <TextBlock Name="OutputConsole"
+                    Foreground="White"
+                    FontFamily="Consolas"
+                    FontSize="13"
+                    TextWrapping="Wrap"
+                    Text=""/> <!-- Aquí se llenará con mensajes -->
+            </ScrollViewer>
+        </Grid>
         
         <!-- Canvas -->
-        <ScrollViewer x:Name="PixelCanvas" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+        <ScrollViewer x:Name="PixelCanvas" Grid.Row="1" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
             <Canvas x:Name="RoadMap" Width="550" Height="550" />
         </ScrollViewer>
     </Grid>

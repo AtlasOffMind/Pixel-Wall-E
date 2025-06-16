@@ -1,12 +1,13 @@
 using System;
 using System.Linq;
 using Avalonia.Media;
+using Core.Interface;
 using Core.Model;
 
 namespace Visual.Scripts;
 public class FuncTion(IDrawing drawing) : IContextFunctions
 {
-    // Retorna el valor X de la posici´ on actual de Wall-E.
+    // Retorna el valor X de la posicion actual de Wall-E.
     public int GetActualX()
     {
         return drawing.Wall_E.colPos;

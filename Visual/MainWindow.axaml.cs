@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Core.Error;
 using Core.Model;
 using Lexer;
 using Visual.Scripts;
@@ -26,7 +28,6 @@ public partial class MainWindow : Window, IDrawing
     public IBrush Brush { get; set; }
     public Action Action { get; set; }
     public FuncTion FuncTion { get; set; }
-
 
     public MainWindow()
     {
@@ -265,8 +266,6 @@ public partial class MainWindow : Window
         var ast = parser.Parse(tokens);
 
         ast.SearchLabels(context);
-
-
     }
     public void Execute_Click(object sender, RoutedEventArgs e)
     {
@@ -282,12 +281,10 @@ public partial class MainWindow : Window
 
         ast.SearchLabels(context);
 
-#if DEBUG
         // IEnumerable<PixelWallyErrors> errors = Scanner.exceptions;
         // errors = errors.Concat(parser.exceptions).Concat(ast.CheckSemantic(context));
         // ErrorsView.Content = string.Join("\n", errors);
-#endif
-
+        
         try
         {
             ast.Evaluate(context);
@@ -300,7 +297,8 @@ public partial class MainWindow : Window
     public async void ToSave(object sender, RoutedEventArgs e)
     {
         var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
-       
+        
+
         var options = new FilePickerSaveOptions()
         {
             DefaultExtension = ".pw",
@@ -319,7 +317,8 @@ public partial class MainWindow : Window
     public async void ToLoad(object sender, RoutedEventArgs e)
     {
         var dir = await StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
-       
+        
+
         var options = new FilePickerOpenOptions()
         {
             FileTypeFilter = [new FilePickerFileType("PW Files") { Patterns = ["*.pw"] }],

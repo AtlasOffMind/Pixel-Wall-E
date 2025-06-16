@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
     Title="PixelWall-E"
     d:DesignHeight="600"
     d:DesignWidth="800"
@@ -12,10 +13,8 @@
 
     <Grid ColumnDefinitions="2*,*" RowDefinitions="auto,*,auto" Background="White" Margin="5">
         
-        <!-- controlador del Panel desplegable del editor -->
+        <!-- controlador del Panel del editor -->
         <StackPanel Orientation="Horizontal" Margin="0,0,5,0" Background="Gray" Grid.Column="1">
-            <Button Foreground="Black" Margin="5" Content="h" Background="Silver" Width="30" Height="30"/>
-            <Label x:Name="FileName" Content="File" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <Button Foreground="Black" Margin="5" Content="Execute" Background="SteelBlue"  Height="30" 
                 Click="Execute_Click"
                 VerticalAlignment="Center" HorizontalAlignment="Right"/>
@@ -24,7 +23,7 @@
         <!-- Panel del editor -->
         <ScrollViewer Margin="0,0,5,0" Grid.Column="1" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <Grid ColumnDefinitions="Auto,*" Background="Black">
-                <Label HorizontalContentAlignment="Right" Width="35" Background="Silver" Content="1" />
+                <Label  HorizontalContentAlignment="Right" Width="35" Background="Silver" Content="1" />
                 <TextBox x:Name="TextEditor" Grid.Column="1" BorderThickness="0" 
                     Background="LightGray" Foreground="Black" Watermark="Spawn(int x, int y )" 
                     AcceptsReturn="True" AcceptsTab="True" 
@@ -32,7 +31,7 @@
             </Grid>
         </ScrollViewer>
 
-        <!-- controlador del Panel desplegable de las herramientas -->
+        <!-- controlador del Panel de las herramientas -->
         <StackPanel x:Name="Tools" Orientation="Horizontal" Margin="0,0,1,0" Background="Gray" >
             <NumericUpDown x:Name="CanvasResize" Watermark="Resize"  Minimum="8" Maximum="256" Value="30" Increment="1" Foreground="Black" Margin="5" Background="Silver" Height="30" Width="120" ValueChanged="ResizeButtonOnClick"/>
             <Button Foreground="Black" Margin="5" Content="Save"   Background="SteelBlue"   Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Click = "ToSave"/>

@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
+      "projectUniqueName": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
       "projectName": "Core",
-      "projectPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
+      "projectPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\Core.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\obj\\",
+      "outputPath": "c:\\My things\\Git\\2nd Proyect Pixel Wall-E\\Core\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -82,13 +82,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json."
-    }
-  ]
+  }
 }

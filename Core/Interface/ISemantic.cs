@@ -1,3 +1,4 @@
+using Core.Error;
 using Core.Model;
 
 namespace Core.Interface;

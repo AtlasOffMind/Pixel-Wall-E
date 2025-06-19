@@ -66,7 +66,7 @@ public class Parser()
             value = new Assign(token.row, token.column, token.name, expression!);
             return true;
         }
-        exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
+        exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), "Only a Literal can be saved in variables"));
         value = null;
         return false;
     }
@@ -222,7 +222,7 @@ public class Parser()
                 return true;
             }
         }
-        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
+        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), "Invalid Boolean expression"));
 
         expression = null;
         index = startIndex;
@@ -248,7 +248,7 @@ public class Parser()
                 return true;
             }
         }
-        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), ""));
+        else exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index]), "Invalid Boolean expression"));
 
 
         expression = null;

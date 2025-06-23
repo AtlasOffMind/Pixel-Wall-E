@@ -13,11 +13,11 @@ public abstract class BaseMethod(int row, int column, string name, List<IExpress
     {
         ActionsMethodInfo? action = null;
         if (!context.Functions.GetMethodInfo(Name, out var function) && !context.Actions.GetMethodInfo(Name, out action))
-            yield return new SemanticError(new Location(row, column), "");
+            yield return new SemanticError(new Location(row, column), "The method dosen't exist in the current context");
         else if (function is not null && function.Types.Length != Params.Length)
-            yield return new SemanticError(new Location(row, column), "");
+            yield return new SemanticError(new Location(row, column), "The Function's elements are not correct");
         else if (action is not null && action.Types.Length != Params.Length)
-            yield return new SemanticError(new Location(row, column), "");
+            yield return new SemanticError(new Location(row, column), "The Action's elements are not correct");
     }
 }
 

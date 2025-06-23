@@ -13,7 +13,7 @@ public class Goto(int row, int column, string labelName, IExpression cond) : AST
     public IEnumerable<SemanticError> CheckSemantic(Context context)
     {
         if (!context.Labels.ContainsKey(LabelName))
-            yield return new SemanticError(Location, "");
+            yield return new SemanticError(Location, "The Label dosen't exist in the current context");
         foreach (var item in Cond.CheckSemantic(context))
             yield return item;
     }

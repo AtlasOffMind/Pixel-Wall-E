@@ -181,7 +181,7 @@ public class Action(IDrawing drawing) : IContextActions
         void actions(object[] x) => method.Invoke(this, x);
         Type[] types = [.. method.GetParameters().Select(x => x.ParameterType)];
         methodInfo = new ActionsMethodInfo(actions, types);
-        return false;
+        return true;
     }
 
     public void RePos(int dirX, int dirY) => drawing.RowMapChildWallE(dirX, dirY);

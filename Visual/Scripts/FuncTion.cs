@@ -67,6 +67,6 @@ public class FuncTion(IDrawing drawing) : IContextFunctions
         object functions(object[] x) => method.Invoke(this, x)!;
         Type[] types = [.. method.GetParameters().Select(x => x.ParameterType)];
         methodInfo = new FunctionsMethodInfo(functions, types, method.ReturnType);
-        return false;
+        return true;
     }
 }

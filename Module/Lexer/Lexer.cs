@@ -57,8 +57,8 @@ namespace Lexer
                 { "||",TokenType.OR},
                 { "&",TokenType.AND},
                 { "|",TokenType.OR}, // mas presedencia que el AND
-                { "false",TokenType.BOOLEAN},
-                { "true",TokenType.BOOLEAN},
+                { "FALSE",TokenType.BOOLEAN},
+                { "TRUE",TokenType.BOOLEAN},
 
                 //Keywords
                 {"GOTO",TokenType.GOTO},

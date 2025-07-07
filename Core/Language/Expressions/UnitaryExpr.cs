@@ -5,7 +5,7 @@ using Core.Model;
 namespace Core.Language.Expressions;
 
 
-public abstract class UnitaryExpr<T>(int row, int column, IExpression left) : IExpression
+public abstract class UnitaryExpr<T>(int row, int column, IExpression left) : ASTNode(row, column), IExpression
 {
     public int Row { get; } = row;
     public int Column { get; } = column;

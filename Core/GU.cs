@@ -1,4 +1,0 @@
-﻿namespace PixelWall_E
-{
-
-}

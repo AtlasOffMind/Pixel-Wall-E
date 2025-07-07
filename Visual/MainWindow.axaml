@@ -20,16 +20,25 @@
                 VerticalAlignment="Center" HorizontalAlignment="Right"/>
         </StackPanel>
 
-        <!-- Panel del editor -->
-        <ScrollViewer Margin="0,0,5,0" Grid.Column="1" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <Grid ColumnDefinitions="Auto,*" Background="Black">
-                <Label  HorizontalContentAlignment="Right" Width="35" Background="Silver" Content="1" />
-                <TextBox x:Name="TextEditor" Grid.Column="1" BorderThickness="0" 
+
+        <Grid Grid.Column="1" Grid.Row="1" ColumnDefinitions="Auto,*" Background="Black">
+            <ScrollViewer x:Name="LineNumberScroll" VerticalScrollBarVisibility="Hidden">
+                <ItemsControl x:Name="LineNumbers" Background="Silver" Width="35">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" HorizontalAlignment="Right" Foreground="Black" FontFamily="Consolas" FontSize="14" Height="22"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <ScrollViewer x:Name="TextScroll" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <TextBox x:Name="TextEditor" BorderThickness="0" 
                     Background="LightGray" Foreground="Black" Watermark="Spawn(int x, int y )" 
                     AcceptsReturn="True" AcceptsTab="True" 
+                    FontFamily="Consolas" FontSize="14"
                     TextChanged="TextEditor_TextChanged"/>
-            </Grid>
-        </ScrollViewer>
+            </ScrollViewer>
+        </Grid>
 
         <!-- controlador del Panel de las herramientas -->
         <StackPanel x:Name="Tools" Orientation="Horizontal" Margin="0,0,1,0" Background="Gray" >
@@ -46,12 +55,14 @@
 
             <Button Content="Errors" Cursor="Hand" Background="Silver" BorderBrush="DarkGray"
                 Click="SplitErrors_Click"/>
+            <Image x:Name="ErrorWarning" Source ="C:\My things\Git\2nd Proyect Pixel Wall-E\Visual\Assets\Icons\pngwing (2).png" Height ="30" 
+                HorizontalAlignment="Right" IsVisible="False" />
 
             <ScrollViewer x:Name="ErrorsView" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                 Background="LightGray" BorderBrush="DarkGray" 
                 BorderThickness="1" Padding="8" CornerRadius="4"
                 Height="0" Grid.Row="2" Grid.ColumnSpan="2">
-                <TextBlock Name="OutputConsole"
+                <TextBlock x:Name="OutputConsole"
                     Foreground="White"
                     FontFamily="Consolas"
                     FontSize="13"

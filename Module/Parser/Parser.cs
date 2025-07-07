@@ -5,6 +5,7 @@ using Lexer.Model;
 using Core.Language.Expressions;
 using Core.Extension;
 using Core.Error;
+using Core.Model;
 
 namespace Parser;
 
@@ -31,7 +32,7 @@ public class Parser()
                 if (TryIDENTIFIER(tokens, out value))
                     instructions.Add(value!);
                 else
-                    exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index-1]), "Assign, Parenthesis or Backslash expected"));
+                    exceptions.Add(new GramaticError(LocationFactory.Create(tokens[index - 1]), "Assign, Parenthesis or Backslash expected"));
             }
             else
                 JumpingInstruct(tokens);
@@ -303,6 +304,7 @@ public class Parser()
     private bool SumExpression(List<Token> tokens, IExpression left, out IExpression? expression)
     {
         var startIndex = index;
+        IExpression? right;
         List<TokenType> tokensTypes = [TokenType.PLUS, TokenType.MINUS];
         var token = tokens[index];
         if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
@@ -311,21 +313,24 @@ public class Parser()
             return true;
         }
 
-        if (type == TokenType.MINUS && MultiExpression(tokens, out IExpression? right))
+        if (type == TokenType.MINUS)
         {
-            left = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
-            if (SumExpression(tokens, left, out expression))
+            if (MultiExpression(tokens, out right))
             {
-                return true;
+                left = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
+                if (SumExpression(tokens, left, out expression))
+                {
+                    return true;
+                }
             }
         }
-
-        if (SumExpression(tokens, out right))
+        else if (SumExpression(tokens, out right))
         {
             expression = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
             return true;
         }
 
+        exceptions.Add(new GramaticError(new Location(token.row, token.column, tokens[index].column - 1), $"Invalid {type} operation"));
         expression = null;
         index = startIndex;
         return false;
@@ -349,6 +354,7 @@ public class Parser()
     private bool MultiExpression(List<Token> tokens, IExpression left, out IExpression? expression)
     {
         List<TokenType> tokensTypes = [TokenType.MULTIPLICATION, TokenType.DIVISION, TokenType.MODULE];
+        IExpression? right;
         var startIndex = index;
         var token = tokens[index];
         if (!FirstMatch(tokens, tokensTypes, out TokenType? type))
@@ -357,21 +363,24 @@ public class Parser()
             return true;
         }
 
-        if (type == TokenType.DIVISION && PowExpression(tokens, out IExpression? right))
+        if (type == TokenType.DIVISION)
         {
-            left = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
-            if (MultiExpression(tokens, left, out expression))
+            if (PowExpression(tokens, out right))
             {
-                return true;
+                left = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
+                if (MultiExpression(tokens, left, out expression))
+                {
+                    return true;
+                }
             }
         }
-
-        if (MultiExpression(tokens, out right))
+        else if (MultiExpression(tokens, out right))
         {
             expression = new BinaryNumExpr(token.row, token.column, left!, right!, type!.Value.ToBinary());
             return true;
         }
 
+        exceptions.Add(new GramaticError(new Location(token.row, token.column, tokens[index].column - 1), $"Invalid {type} operation"));
         expression = null;
         index = startIndex;
         return false;
@@ -408,6 +417,8 @@ public class Parser()
                 expression = new BinaryNumExpr(token.row, token.column, left!, right!, BinaryType.POW);
                 return true;
             }
+
+            exceptions.Add(new GramaticError(new Location(token.row, token.column, tokens[index].column - 1), $"Invalid {TokenType.POW} operation"));
         }
 
         expression = null;
@@ -422,7 +433,11 @@ public class Parser()
             count++;
         Token token = tokens[index - 1];
         if (!LiteralExpression<int>(tokens, TokenType.NUMBER, out expression))
+        {
+            if (count != 0)
+                exceptions.Add(new GramaticError(new Location(token.row, token.column, tokens[index].column - 1), $"Invalid {TokenType.MINUS} operation"));
             return false;
+        }
         if (count % 2 != 0)
             expression = new UniNumExpr(token.row, token.column, expression!);
         return true;

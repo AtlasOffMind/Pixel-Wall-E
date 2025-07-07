@@ -15,6 +15,7 @@ using Visual.Scripts;
 using Action = Visual.Scripts.Action;
 using Colors = Avalonia.Media.Colors;
 using Location = Visual.Scripts.Location;
+using Avalonia.Collections;
 
 
 namespace MyApp;
@@ -28,12 +29,14 @@ public partial class MainWindow : Window, IDrawing
     public IBrush Brush { get; set; }
     public Action Action { get; set; }
     public FuncTion FuncTion { get; set; }
+    private AvaloniaList<string> _lineNumbers = new AvaloniaList<string>();
 
     public MainWindow()
     {
         InitializeComponent();
         InstantiatingVariables();
         DrawingRoadMap();
+        UpdateLineNumbers();
     }
 
     private void InstantiatingVariables()
@@ -46,6 +49,7 @@ public partial class MainWindow : Window, IDrawing
         PWBrush = new PWBrush(Colors.White, 1);
         Action = new Action(this);
         FuncTion = new FuncTion(this);
+        LineNumbers.ItemsSource = _lineNumbers;
 
     }
     private void DrawingRoadMap()
@@ -206,6 +210,7 @@ public partial class MainWindow : Window, IDrawing
         Exist_walle = false;
         PWBrush.Size = 1;
         PWBrush.CurrentColor = Colors.White;
+        ErrorWarning.IsVisible = false;
 
     }
     public void PaintingBlock(int x, int y)
@@ -223,8 +228,16 @@ public partial class MainWindow : Window, IDrawing
     }
     public int GetDimension() => (int)CanvasResize.Value!;
     public double GetActualSize() => CellSize * ZoomButton.Value * 0.01;
-    public bool IsValidPos(int x, int y) => (x >= 0 && x < GetDimension() && y >= 0 && y < GetDimension()) ? true : false;
+    public bool IsValidPos(int x, int y) => (x >= 0 && x < GetDimension() && y >= 0 && y < GetDimension());
 
+    private void UpdateLineNumbers()
+    {
+        var code = TextEditor.Text ?? string.Empty;
+        var lines = code.Split(["\r\n", "\n"], StringSplitOptions.None);
+        _lineNumbers.Clear();
+        for (int i = 1; i <= lines.Length; i++)
+            _lineNumbers.Add(i.ToString());
+    }
 }
 
 public partial class MainWindow : Window
@@ -259,18 +272,22 @@ public partial class MainWindow : Window
     {
         var parser = new Parser.Parser();
         var context = new Context(FuncTion, Action);
-
         var code = TextEditor.Text;
         var lines = code!.Split("\r\n");
         var tokens = Scanner.Tokenizer(lines);
         var ast = parser.Parse(tokens);
-
         ast.SearchLabels(context);
+        UpdateLineNumbers();
+
+        IEnumerable<PixelWallyErrors> errors = Scanner.exceptions;
+        errors = errors.Concat(parser.exceptions).Concat(ast.CheckSemantic(context));
+        ErrorsView.Content = string.Join("\n", errors);
     }
     public void Execute_Click(object sender, RoutedEventArgs e)
     {
         ClearCanvas();
         var code = TextEditor.Text;
+
         if (!string.IsNullOrEmpty(code))
         {
 
@@ -295,6 +312,10 @@ public partial class MainWindow : Window
             {
                 ex = ex is TargetInvocationException target ? target.InnerException! : ex;
             }
+
+            if (string.IsNullOrEmpty(OutputConsole.Text))
+                ErrorWarning.IsVisible = false;
+            else ErrorWarning.IsVisible = true;
         }
     }
     public async void ToSave(object sender, RoutedEventArgs e)
